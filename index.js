@@ -7,6 +7,6 @@ pcsc.on('reader', reader => {
   reader.on('error', console.error);
   reader.on('status', function(status) {
     console.dir(this);
-    console.log(`status: ${status}`);
+    console.dir(status);
   });
 });
