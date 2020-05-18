@@ -8,5 +8,6 @@ pcsc.on('reader', reader => {
   reader.on('status', function(status) {
     console.dir(this);
     console.dir(status);
+    console.log(status.atr ? status.atr.toString() : undefined);
   });
 });
