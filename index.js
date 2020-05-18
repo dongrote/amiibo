@@ -10,6 +10,12 @@ pcsc
       const changes = reader.state ^ status.state;
       if (changes) {
         console.log('changes detected');
+        if (changes & reader.SCARD_STATE_EMPTY) {
+          console.log('card removed');
+        }
+        if (changes & reader.SCARD_STATE_PRESENT) {
+          console.log('card presented');
+        }
       } else {
         console.log('no changes detected');
       }
