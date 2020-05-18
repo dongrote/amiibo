@@ -13,6 +13,7 @@ pcsc
     reader.on('error', console.error);
     reader.on('status', status => {
       const changes = reader.state ^ status.state;
+      console.log('change detected on', reader.name);
       console.log(`changes: ${Number(changes).toString(16)}`);
       if (changes) {
         console.log('changes detected');
