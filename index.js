@@ -23,6 +23,7 @@ pcsc
         if (cardPresented(reader, status)) {
           console.log('card presented');
         }
+        console.dir(status.atr);
       } else {
         console.log('no changes detected');
       }
