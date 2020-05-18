@@ -24,6 +24,7 @@ pcsc
           console.log('card presented');
         }
         console.dir(status.atr);
+        console.log(status.atr.toString('hex'));
       } else {
         console.log('no changes detected');
       }
