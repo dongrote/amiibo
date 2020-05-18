@@ -8,6 +8,7 @@ pcsc
     reader.on('error', console.error);
     reader.on('status', status => {
       const changes = reader.state ^ status.state;
+      console.log(`changes: ${Number(changes).toString('hex')}`);
       if (changes) {
         console.log('changes detected');
         if (changes & reader.SCARD_STATE_EMPTY) {
