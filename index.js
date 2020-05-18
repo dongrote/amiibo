@@ -1,5 +1,10 @@
 'use strict';
 
+
+const checkChange = (reader, status, constant) => ((reader.state ^ status.state) & reader[constant]) && (status.state & reader[constant]);
+const cardRemoved = (reader, status) => checkChange(reader, status, 'SCARD_STATE_EMPTY');
+const cardPresented = (reader, status) => checkChange(reader, status, 'SCARD_STATE_PRESENT');
+
 const pcsclite = require('pcsclite');
 const pcsc = pcsclite();
 pcsc
@@ -11,10 +16,10 @@ pcsc
       console.log(`changes: ${Number(changes).toString(16)}`);
       if (changes) {
         console.log('changes detected');
-        if (changes & reader.SCARD_STATE_EMPTY) {
+        if (cardRemoved(reader, status)) {
           console.log('card removed');
         }
-        if (changes & reader.SCARD_STATE_PRESENT) {
+        if (cardPresented(reader, status)) {
           console.log('card presented');
         }
       } else {
