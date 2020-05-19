@@ -10,10 +10,10 @@ nfc
       .on('end', () => console.log(`${reader.reader.name} device removed`))
       .on('card', card => {
         console.log(`card inserted`, card);
-        reader.read(0, 64)
+        reader.read(0, 540)
           .then(data => {
             console.log('data rx length', data.length);
-            console.log(data.toString());
+            console.log(data.toString('hex'));
           })
           .catch(err => console.error('read error', err));
       })
