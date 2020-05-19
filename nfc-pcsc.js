@@ -1,6 +1,6 @@
 'use strict';
 
-const NFC = require('nfc-pcsc');
+const {NFC} = require('nfc-pcsc');
 const nfc = new NFC();
 
 nfc
