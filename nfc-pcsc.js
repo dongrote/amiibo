@@ -15,7 +15,7 @@ nfc
           .then(data => {
             console.log('data rx length', data.length);
             console.log(data.toString('hex'));
-            console.dir(core.Tag.uid(data));
+            console.dir(core.Tag.uid(data).toString('hex'));
           })
           .catch(err => console.error('read error', err));
       })
