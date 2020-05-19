@@ -8,7 +8,15 @@ nfc
     reader
       .on('error', err => console.error('reader error', err))
       .on('end', () => console.log(`${reader.reader.name} device removed`))
-      .on('card', card => console.log(`card inserted`, card))
+      .on('card', card => {
+        console.log(`card inserted`, card);
+        reader.read(0, 64)
+          .then(data => {
+            console.log('data rx length', data.length);
+            console.log(data.toString());
+          })
+          .catch(err => console.error('read error', err));
+      })
       .on('card.off', card => console.log(`card removed`, card));
   })
   .on('error', err => console.error('nfc error', err));
