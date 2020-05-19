@@ -22,6 +22,13 @@ pcsc
         }
         if (cardPresented(reader, status)) {
           console.log('card presented');
+          reader.connect((err, proto) => {
+            if (err) {
+              console.error('reader.connect error', err);
+              return;
+            }
+            console.log('proto', proto);
+          });
         }
         console.dir(status.atr);
         console.log(status.atr.toString('hex'));
