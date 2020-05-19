@@ -2,6 +2,7 @@
 
 const {NFC} = require('nfc-pcsc');
 const nfc = new NFC();
+const core = require('./core');
 
 nfc
   .on('reader', reader => {
@@ -14,6 +15,7 @@ nfc
           .then(data => {
             console.log('data rx length', data.length);
             console.log(data.toString('hex'));
+            console.dir(core.Tag.uid(data));
           })
           .catch(err => console.error('read error', err));
       })
