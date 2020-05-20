@@ -22,8 +22,9 @@ nfc
             const amiibo = new core.Amiibo(data);
             console.log('uid', amiibo.uid().toString('hex'));
             console.log('amiibo id', amiibo.amiiboId().toString('hex'));
-            console.log('amiibo: ', _.get(db.lookupAmiiboById(amiibo.amiiboId().toString('hex')), 'name', 'unknown'));
+            return db.lookupAmiiboById(amiibo.amiiboId().toString('hex'));
           })
+          .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
           .catch(err => console.error('read error', err));
       })
       .on('card.off', () => console.log(`card removed`));
