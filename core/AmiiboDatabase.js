@@ -1,5 +1,6 @@
 'use strict';
 const _ = require('lodash'),
+  log = require('debug-logger')('AmiiboDatabase'),
   fs = require('fs');
 
 class AmiiboDatabase {
@@ -14,6 +15,7 @@ class AmiiboDatabase {
         })
         .on('end', () => {
           this.db = JSON.parse(jsonData.toString());
+          log.info('database populated');
           resolve(this);
         });
     });
