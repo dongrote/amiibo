@@ -19,6 +19,6 @@ nfc
           })
           .catch(err => console.error('read error', err));
       })
-      .on('card.off', card => console.log(`card removed`, card));
+      .on('card.off', () => console.log(`card removed`));
   })
   .on('error', err => console.error('nfc error', err));
