@@ -25,6 +25,7 @@ class AmiiboDatabase {
   lookupAmiiboById(id) {
     const lookupKey = `amiibos.0x${id}`;
     log.debug('looking up', lookupKey);
+    log.debug('amiibo ids', _.keys(_.get(this.db, 'amiibos', {})));
     return Promise.resolve(_.get(this.db, lookupKey, null));
   }
 }
