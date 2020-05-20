@@ -22,7 +22,9 @@ class AmiiboDatabase {
   }
 
   lookupAmiiboById(id) {
-    return Promise.resolve(_.get(this.db, `amiibos.0x${id}`, null));
+    const lookupKey = `amiibos.0x${id}`;
+    log.debug('looking up', lookupKey);
+    return Promise.resolve(_.get(this.db, lookupKey, null));
   }
 }
 
