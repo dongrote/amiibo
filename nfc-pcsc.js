@@ -1,5 +1,5 @@
 'use strict';
-
+const _ = require('lodash');
 const {NFC} = require('nfc-pcsc');
 const nfc = new NFC();
 const core = require('./core');
