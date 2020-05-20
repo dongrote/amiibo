@@ -16,6 +16,7 @@ class AmiiboDatabase {
         .on('end', () => {
           this.db = JSON.parse(jsonData.toString());
           log.info('database populated');
+          log.debug(`${_.size(this.db.amiibos)} amiibos loaded`);
           resolve(this);
         });
     });
