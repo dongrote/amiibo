@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dongrote/nfc#readme",
   "dependencies": {
+    "lodash": "^4.17.15",
     "nfc-pcsc": "^0.8.0",
     "pcsclite": "^1.0.0"
   }
