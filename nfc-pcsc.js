@@ -20,8 +20,6 @@ nfc
         reader.read(0, 540)
           .then(data => {
             const amiibo = new core.Amiibo(data);
-            console.log('uid', amiibo.uid().toString('hex'));
-            console.log('amiibo id', amiibo.amiiboId().toString('hex'));
             return db.lookupAmiiboById(amiibo.amiiboId().toString('hex'));
           })
           .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
