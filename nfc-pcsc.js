@@ -13,9 +13,9 @@ nfc
         console.log(`card inserted`, card);
         reader.read(0, 540)
           .then(data => {
-            console.log('data rx length', data.length);
-            console.log(data.toString('hex'));
-            console.dir(core.Tag.uid(data).toString('hex'));
+            const amiibo = new core.Amiibo(data);
+            console.log('uid', amiibo.uid().toString('hex'));
+            console.log('amiibo id', amiibo.amiiboId().toString('hex'));
           })
           .catch(err => console.error('read error', err));
       })
