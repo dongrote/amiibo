@@ -19,10 +19,13 @@ nfc
         reader.read(0, 540)
           .then(data => {
             const amiibo = new core.Amiibo(data);
-            core.MifareUltralight.printLockBytes(data);
             return db.lookupAmiiboById(amiibo.amiiboId().toString('hex'));
           })
           .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
+          .then(() => {
+            const ntag = new core.NTAG215(reader);
+            return ntag.serialNumber().then(sn => console.log('serial number: ', sn.toString('hex')));
+          })
           .catch(err => console.error('read error', err));
       });
 })
