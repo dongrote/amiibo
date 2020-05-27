@@ -2,9 +2,11 @@
 const EventEmitter = require('events');
 
 class NTAG215 extends EventEmitter {
+
   constructor(reader) {
     super();
     this.reader = reader;
+    this.reader.on('error', err => this.emit('error', err));
   }
 
   async serialNumber() {
@@ -21,7 +23,7 @@ class NTAG215 extends EventEmitter {
   }
 
   async dynamicLockBytes() {
-    const bytes = await this.reader.read(0x82, 3);
+    const bytes = await this.reader.read(0x82 - 4, 16).slice(12);
     if (bytes[3] !== 0xbd) {
       throw new Error(`expected byte 3 to equal 0xBD; instead received 0x${bytes.slice(3).toString('hex')}`);
     }
@@ -46,7 +48,7 @@ class NTAG215 extends EventEmitter {
     if (pageno > 0x0f) {
       // these are locked via dynamic lock bytes
       const lockBytes = await this.dynamicLockBytes();
-      return pageno < 130 ? lockBytes[0] & (1 << ((pageno - 0x10) >> 1)) : false;
+      return pageno < 0x82 ? lockBytes[0] & (1 << ((pageno - 0x10) >> 1)) : false;
     }
     const lockBytes = await this.lockBytes();
     return pageno < 8 ? lockBytes[0] & (1 << pageno) : lockBytes[1] & (1 << (pageno - 0x08));
