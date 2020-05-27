@@ -20,13 +20,21 @@ class NTAG215 extends EventEmitter {
     return read.slice(2, 4);
   }
 
+  async dynamicLockBytes() {
+    return await this.reader.read(0x82, 3);
+  }
+
   capabilities() {
 
   }
 
   async pageIsLocked(pageno) {
     if (pageno < 3) return false;
-    if (pageno > 15) return false;
+    if (pageno > 15) {
+      // these are locked via dynamic lock bytes
+      const lockBytes = await this.dynamicLockBytes();
+      return pageno < 130 ? lockBytes[0] & (1 << ((pageno - 0x10) >> 1)) : false;
+    }
     const lockBytes = await this.lockBytes();
     return pageno < 8 ? lockBytes[0] & (1 << pageno) : lockBytes[1] & (1 << (pageno - 8));
   }
