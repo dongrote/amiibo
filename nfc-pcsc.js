@@ -26,8 +26,11 @@ nfc
             const ntag = new core.NTAG215(reader);
             return ntag.serialNumber()
               .then(sn => console.log('serial number: ', sn.toString('hex')))
-              .then(() => ntag.memorySize())
-              .then(size => console.log(`memory size`, size));
+              .then(() => Promise.all([ntag.memorySize(), ntag.fullDump()]))
+              .then(([size, all]) => {
+                console.log(`memory size`, size);
+                console.dir(all);
+              });
           })
           .catch(err => console.error('read error', err));
       });
