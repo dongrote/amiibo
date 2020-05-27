@@ -23,7 +23,8 @@ class NTAG215 extends EventEmitter {
   }
 
   async dynamicLockBytes() {
-    const bytes = await this.reader.read(0x82 - 4, 16).slice(12);
+    const rx = await this.reader.read(0x82 - 4, 16);
+    const bytes = rx.slice(12);
     if (bytes[3] !== 0xbd) {
       throw new Error(`expected byte 3 to equal 0xBD; instead received 0x${bytes.slice(3).toString('hex')}`);
     }

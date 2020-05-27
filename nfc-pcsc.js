@@ -18,10 +18,13 @@ nfc
       .on('card', card => {
         reader.read(0, 540)
           .then(data => {
-            const amiibo = new core.Amiibo(data);
-            return db.lookupAmiiboById(amiibo.amiiboId().toString('hex'));
+            const amiibo = new core.Amiibo(reader);
+            return amiibo.id()
+              .then(id => db.lookupAmiiboById(id))
+              .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
+              .then(() => amiibo.password())
+              .then(pw => console.log(`amiibo password: ${pw.toString('hex')}`));
           })
-          .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
           .then(() => {
             const ntag = new core.NTAG215(reader);
             return ntag.serialNumber()
