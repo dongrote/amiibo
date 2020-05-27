@@ -19,6 +19,7 @@ nfc
         reader.read(0, 540)
           .then(data => {
             const amiibo = new core.Amiibo(data);
+            core.MifareUltralight.printLockBytes(data);
             return db.lookupAmiiboById(amiibo.amiiboId().toString('hex'));
           })
           .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
