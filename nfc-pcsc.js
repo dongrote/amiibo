@@ -26,8 +26,8 @@ nfc
             const ntag = new core.NTAG215(reader);
             return ntag.serialNumber()
               .then(sn => console.log('serial number: ', sn.toString('hex')))
-              .then(() => ntag.pageIsLocked(4))
-              .then(locked => console.log(`page 4 is${locked ? '' : ' not'} locked.`));
+              .then(() => ntag.memorySize())
+              .then(size => console.log(`memory size`, size));
           })
           .catch(err => console.error('read error', err));
       });

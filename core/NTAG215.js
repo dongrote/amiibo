@@ -28,6 +28,11 @@ class NTAG215 extends EventEmitter {
 
   }
 
+  async memorySize() {
+    const bytes = await this.reader.read(3, 4);
+    return bytes[2] * 8;
+  }
+
   async pageIsLocked(pageno) {
     if (pageno < 3) return false;
     if (pageno > 15) {
