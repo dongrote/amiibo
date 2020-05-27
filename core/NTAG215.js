@@ -25,8 +25,10 @@ class NTAG215 extends EventEmitter {
   }
 
   async pageIsLocked(pageno) {
+    if (pageno < 3) return false;
+    if (pageno > 15) return false;
     const lockBytes = await this.lockBytes();
-
+    return pageno < 8 ? lockBytes[0] & (1 << pageno) : lockBytes[1] & (1 << (pageno - 8));
   }
 
   setPassword(password) {
