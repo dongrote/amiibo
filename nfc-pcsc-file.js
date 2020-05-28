@@ -10,7 +10,7 @@ db
   .then(() => {
     const reader = new core.FileTagReader();
     return reader
-      .import(process.argv[1])
+      .import(process.argv[2])
       .then(() => {
         const amiibo = new core.Amiibo(reader);
         return amiibo.id()
