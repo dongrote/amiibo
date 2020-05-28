@@ -3,6 +3,7 @@ const EventEmitter = require('events');
 
 class NTAG215 extends EventEmitter {
   PAGE_SIZE = 4;
+  LOCKBYTES_PAGENO = 0x02;
   CC_PAGENO = 0x03;
   USER_PAGENO = 0x04;
   DLOCKBYTES_PAGENO = 0x82;
@@ -90,7 +91,7 @@ class NTAG215 extends EventEmitter {
   }
 
   async pageIsLocked(pageno) {
-    if (pageno < 0x03) return false;
+    if (pageno < this.CC_PAGENO) return false;
     if (pageno > 0x0f) {
       // these are locked via dynamic lock bytes
       const lockBytes = await this.dynamicLockBytes();

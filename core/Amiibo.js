@@ -8,6 +8,7 @@ class Amiibo extends NTAG215 {
   TAIL_LENGTH = 0x4;
   AMIIBO_ID_BLOCK_NUMBER = 0x15;
   AMIIBO_ID_LENGTH = 0x8;
+  AMIIBO_SIZE = 540;
 
   async password() {
     const uid = await this.serialNumber();
@@ -52,15 +53,18 @@ class Amiibo extends NTAG215 {
   async writeUserMemory(amiiboData) {
     const sliceStart = this.CC_PAGENO * this.PAGE_SIZE;
     const sliceEnd = this.DLOCKBYTES_PAGENO * this.PAGE_SIZE;
+    if (amiiboData.length !== this.AMIIBO_SIZE) {
+      throw new Error(`Expected Amiibo Data to be ${this.AMIIBO_SIZE} bytes; got ${amiiboData.length} bytes`);
+    }
     return await this.reader
       .write(this.CC_PAGENO, amiiboData.slice(sliceStart, sliceEnd));
   }
 
   async writeLockInfo() {
-    const pageTwo = await this.reader.read(2, this.PAGE_SIZE);
+    const pageTwo = await this.reader.read(this.LOCKBYTES_PAGENO, this.PAGE_SIZE);
     pageTwo[2] = 0x0f;
     pageTwo[3] = 0xe0;
-    await this.reader.write(2, pageTwo);
+    await this.reader.write(this.LOCKBYTES_PAGENO, pageTwo);
     await this.reader.write(this.DLOCKBYTES_PAGENO, Buffer.from([0x01, 0x00, 0x0f, 0x00]));
     await this.reader.write(this.CFG0_PAGENO, Buffer.from([0x00, 0x00, 0x00, 0x04]));
     await this.reader.write(this.CFG1_PAGENO, Buffer.from([0x5f, 0x00, 0x00, 0x00]));
