@@ -20,7 +20,10 @@ nfc
           .then(data => {
             const amiibo = new core.Amiibo(reader);
             return amiibo.id()
-              .then(id => db.lookupAmiiboById(id))
+              .then(id => {
+                console.log('id: ', id);
+                return db.lookupAmiiboById(id);
+              })
               .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
               .then(() => amiibo.password())
               .then(pw => console.log(`amiibo password: ${pw.toString('hex')}`))
