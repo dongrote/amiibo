@@ -41,7 +41,7 @@ class FileTagReader extends EventEmitter {
       }
       console.dir(dataBuf);
       console.dir(blockNumber * this.PAGE_SIZE);
-      this.buffer.write(dataBuf, blockNumber * this.PAGE_SIZE);
+      this.buffer.write(dataBuf.toString('latin1'), blockNumber * this.PAGE_SIZE);
       resolve();
     });
   }
