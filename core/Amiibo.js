@@ -31,12 +31,12 @@ class Amiibo extends NTAG215 {
 
   async head() {
     const rx = await this.reader.read(this.HEAD_BLOCK_NUMBER, this.HEAD_LENGTH);
-    return rx.readInt32LE();
+    return rx.readInt32BE();
   }
 
   async tail() {
     const rx = await this.reader.read(this.TAIL_BLOCK_NUMBER, this.TAIL_LENGTH);
-    return rx.readInt32LE();
+    return rx.readInt32BE();
   }
 
   async imageUrl() {
