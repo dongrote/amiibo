@@ -54,7 +54,7 @@ class Amiibo extends NTAG215 {
   }
 
   async writeUserMemory(amiiboData) {
-    return await this.reader.write(3, amiiboData);
+    return await this.reader.write(3, amiiboData.slice(3*4, 130 * 4));
   }
 
   async writePACK() {
