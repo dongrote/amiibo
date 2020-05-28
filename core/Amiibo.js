@@ -6,10 +6,6 @@ class Amiibo extends NTAG215 {
   HEAD_LENGTH = 0x4;
   TAIL_BLOCK_NUMBER = 0x16;
   TAIL_LENGTH = 0x4;
-  HEAD_MASK = 0xFFFFFFFF00000000;
-  TAIL_MASK = 0x00000000FFFFFFFF;
-  HEAD_SHIFT = 32;
-  TAIL_SHIFT = 0;
   AMIIBO_ID_BLOCK_NUMBER = 0x15;
   AMIIBO_ID_LENGTH = 0x8;
 
@@ -54,7 +50,10 @@ class Amiibo extends NTAG215 {
   }
 
   async writeUserMemory(amiiboData) {
-    return await this.reader.write(this.CC_PAGENO, amiiboData.slice(3 * this.PAGE_SIZE, 130 * this.PAGE_SIZE));
+    const sliceStart = this.CC_PAGENO * this.PAGE_SIZE;
+    const sliceEnd = this.DLOCKBYTES_PAGENO * this.PAGE_SIZE;
+    return await this.reader
+      .write(this.CC_PAGENO, amiiboData.slice(sliceStart, sliceEnd));
   }
 
   async writeLockInfo() {
