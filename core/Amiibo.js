@@ -54,34 +54,25 @@ class Amiibo extends NTAG215 {
   }
 
   async writeUserMemory(amiiboData) {
-    return await this.reader.write(3, amiiboData.slice(3*4, 130 * 4));
-  }
-
-  async writePACK() {
-    await this.reader.write(0x86, Buffer.from([0x80, 0x80, 0x00, 0x00]));
-  }
-
-  async writePassword() {
-    const password = await this.password();
-    await this.writePACK();
-    await this.reader.write(0x85, password);
+    return await this.reader.write(this.CC_PAGENO, amiiboData.slice(3 * this.PAGE_SIZE, 130 * this.PAGE_SIZE));
   }
 
   async writeLockInfo() {
-    const pageTwo = await this.reader.read(2, 4);
+    const pageTwo = await this.reader.read(2, this.PAGE_SIZE);
     pageTwo[2] = 0x0f;
     pageTwo[3] = 0xe0;
     await this.reader.write(2, pageTwo);
-    // dynamic lock bits
-    await this.reader.write(130, Buffer.from([0x01, 0x00, 0x0f, 0x00]));
-    await this.reader.write(131, Buffer.from([0x00, 0x00, 0x00, 0x04]));
-    await this.reader.write(132, Buffer.from([0x5f, 0x00, 0x00, 0x00]));
+    await this.reader.write(this.DLOCKBYTES_PAGENO, Buffer.from([0x01, 0x00, 0x0f, 0x00]));
+    await this.reader.write(this.CFG0_PAGENO, Buffer.from([0x00, 0x00, 0x00, 0x04]));
+    await this.reader.write(this.CFG1_PAGENO, Buffer.from([0x5f, 0x00, 0x00, 0x00]));
   }
 
   async write(amiiboData) {
     await this.validateBlankTag();
     await this.writeUserMemory(amiiboData);
-    await this.writePassword();
+    const password = await this.password();
+    await this.writePACK(Buffer.from([0x80, 0x80]));
+    await this.writePassword(password);
     await this.writeLockInfo();
   }
 

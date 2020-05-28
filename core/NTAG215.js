@@ -2,6 +2,14 @@
 const EventEmitter = require('events');
 
 class NTAG215 extends EventEmitter {
+  PAGE_SIZE = 4;
+  CC_PAGENO = 0x03;
+  USER_PAGENO = 0x04;
+  DLOCKBYTES_PAGENO = 0x82;
+  CFG0_PAGENO = 0x83;
+  CFG1_PAGENO = 0x84;
+  PWD_PAGENO = 0x85;
+  PACK_PAGENO = 0x86;
 
   constructor(reader) {
     super();
@@ -59,12 +67,12 @@ class NTAG215 extends EventEmitter {
   }
 
   async lockBytes() {
-    const read = await this.reader.read(0x02, 4);
+    const read = await this.reader.read(0x02, this.PAGE_SIZE);
     return read.slice(2, 4);
   }
 
   async dynamicLockBytes() {
-    const rx = await this.reader.read(0x82 - 4, 16);
+    const rx = await this.reader.read(0x82 - this.PAGE_SIZE, 16);
     const bytes = rx.slice(12);
     if (bytes[3] !== 0xbd) {
       throw new Error(`expected byte 3 to equal 0xBD; instead received 0x${bytes.slice(3).toString('hex')}`);
@@ -72,16 +80,12 @@ class NTAG215 extends EventEmitter {
     return bytes;
   }
 
-  capabilities() {
-
-  }
-
   async fullDump() {
     return await this.reader.read(0, 540);
   }
 
   async memorySize() {
-    const bytes = await this.reader.read(0x03, 4);
+    const bytes = await this.reader.read(this.CC_PAGENO, this.PAGE_SIZE);
     return bytes[2] * 8;
   }
 
@@ -90,14 +94,18 @@ class NTAG215 extends EventEmitter {
     if (pageno > 0x0f) {
       // these are locked via dynamic lock bytes
       const lockBytes = await this.dynamicLockBytes();
-      return pageno < 0x82 ? lockBytes[0] & (1 << ((pageno - 0x10) >> 1)) : false;
+      return pageno < this.DLOCKBYTES_PAGENO ? lockBytes[0] & (1 << ((pageno - 0x10) >> 1)) : false;
     }
     const lockBytes = await this.lockBytes();
     return pageno < 8 ? lockBytes[0] & (1 << pageno) : lockBytes[1] & (1 << (pageno - 0x08));
   }
 
-  setPassword(password) {
+  async writePACK(pack) {
+    return await this.reader.write(this.PACK_PAGENO, Buffer.concat([pack, Buffer.from([0x00, 0x00])]))
+  }
 
+  async writePassword(password) {
+    return await this.reader.write(this.PWD_PAGENO, password);
   }
 
 }

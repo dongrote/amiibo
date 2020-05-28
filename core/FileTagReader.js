@@ -7,6 +7,7 @@ const EventEmitter = require('events'),
 
 class FileTagReader extends EventEmitter {
   TOTAL_LENGTH = 540;
+  PAGE_SIZE = 4;
   buffer = Buffer.alloc(540);
 
   import(filepath) {
@@ -32,23 +33,23 @@ class FileTagReader extends EventEmitter {
 
   write(blockNumber, dataBuf) {
     return new Promise((resolve, reject) => {
-      if (blockNumber * 4 > this.TOTAL_LENGTH) {
+      if (blockNumber * this.PAGE_SIZE > this.TOTAL_LENGTH) {
         return reject(new Error(`Block number ${blockNumber} out of range`));
       }
-      if ((blockNumber * 4) + dataBuf.length > this.TOTAL_LENGTH) {
+      if ((blockNumber * this.PAGE_SIZE) + dataBuf.length > this.TOTAL_LENGTH) {
         return reject(new Error(`Data will exceed writeable range`));
       }
-      this.buffer.write(dataBuf, blockNumber * 4);
+      this.buffer.write(dataBuf, blockNumber * this.PAGE_SIZE);
       resolve();
     });
   }
 
   read(blockNumber, bytes) {
     return new Promise((resolve, reject) => {
-      if (blockNumber * 4 > this.TOTAL_LENGTH) {
+      if (blockNumber * this.PAGE_SIZE > this.TOTAL_LENGTH) {
         return reject(new Error(`Block number ${blockNumber} out of range`));
       }
-      const read = this.buffer.slice(blockNumber * 4, (blockNumber * 4) + bytes);
+      const read = this.buffer.slice(blockNumber * this.PAGE_SIZE, (blockNumber * this.PAGE_SIZE) + bytes);
       resolve(read);
     });
   }
