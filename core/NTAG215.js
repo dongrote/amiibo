@@ -9,7 +9,9 @@ class NTAG215 extends EventEmitter {
     this.reader.on('error', err => this.emit('error', err));
   }
 
-  crc(buf) {
+
+
+  iso1443a_crc(buf) {
     let crc = 0x6363;
     buf.forEach(b => {
       const x = (b ^ (crc & 0x00ff)) & 0xff;
@@ -17,6 +19,21 @@ class NTAG215 extends EventEmitter {
       crc = ((crc >> 8) ^ (y << 8) ^ (y << 3) ^ (y >> 4)) & 0xffffffff;
     });
     return Buffer.from([crc & 0xff, (crc >> 8) & 0xff]);
+  }
+
+  iso1443b_crc(buf) {
+    let crc = 0x0000ffff;
+    buf.forEach(b => {
+      const x = (b ^ (crc & 0x00ff)) & 0xff;
+      const y = (x ^ (x << 4)) & 0xff;
+      crc = ((crc >> 8) ^ (y << 8) ^ (y << 3) ^ (y >> 4)) & 0xffffffff;
+    });
+    crc = (~crc) & 0xffffffff;
+    return Buffer.from([crc & 0xff, (crc >> 8) & 0xff]);
+  }
+
+  crc(buf) {
+    return this.iso1443b_crc(buf);
   }
 
   async transmit(buf, responseLength) {
