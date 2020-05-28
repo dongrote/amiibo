@@ -50,13 +50,6 @@ class NTAG215 extends EventEmitter {
     return rx;
   }
 
-  async validateBlankTag() {
-    const lockBytes = await this.lockBytes();
-    if (lockBytes[0] === 0x0f && lockBytes[1] === 0xe0) {
-      throw new Error('tag is already an Amiibo');
-    }
-  }
-
   async serialNumber() {
     const read = await this.reader.read(0x00, 9);
     return Buffer.concat([
@@ -106,7 +99,6 @@ class NTAG215 extends EventEmitter {
   setPassword(password) {
 
   }
-
 
 }
 

@@ -12,6 +12,7 @@ class Amiibo extends NTAG215 {
   TAIL_SHIFT = 0;
   AMIIBO_ID_BLOCK_NUMBER = 0x15;
   AMIIBO_ID_LENGTH = 0x8;
+
   async password() {
     const uid = await this.serialNumber();
     const key = uid.length === 7 ? Buffer.allocUnsafe(4) : null;
@@ -44,6 +45,46 @@ class Amiibo extends NTAG215 {
     const tail = await this.tail();
     return `https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_${head.toString(16).padStart(8, '0')}-${tail.toString(16).padStart(8, '0')}.png`;
   }
+
+  async validateBlankTag() {
+    const lockBytes = await this.lockBytes();
+    if (lockBytes[0] === 0x0f && lockBytes[1] === 0xe0) {
+      throw new Error('tag is already an Amiibo');
+    }
+  }
+
+  async writeUserMemory(amiiboData) {
+    return await this.reader.write(3, amiiboData);
+  }
+
+  async writePACK() {
+    await this.reader.write(0x86, Buffer.from([0x80, 0x80, 0x00, 0x00]));
+  }
+
+  async writePassword() {
+    const password = await this.password();
+    await this.writePACK();
+    await this.reader.write(0x85, password);
+  }
+
+  async writeLockInfo() {
+    const pageTwo = await this.reader.read(2, 4);
+    pageTwo[2] = 0x0f;
+    pageTwo[3] = 0xe0;
+    await this.reader.write(2, pageTwo);
+    // dynamic lock bits
+    await this.reader.write(130, Buffer.from([0x01, 0x00, 0x0f, 0x00]));
+    await this.reader.write(131, Buffer.from([0x00, 0x00, 0x00, 0x04]));
+    await this.reader.write(132, Buffer.from([0x5f, 0x00, 0x00, 0x00]));
+  }
+
+  async write(amiiboData) {
+    await this.validateBlankTag();
+    await this.writeUserMemory(amiiboData);
+    await this.writePassword();
+    await this.writeLockInfo();
+  }
+
 }
 
 exports = module.exports = Amiibo;
