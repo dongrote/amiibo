@@ -12,7 +12,6 @@ db.load('./amiibo.json').catch(console.error);
 
 nfc
   .on('reader', reader => {
-    reader.setBuzzerOutput(false).then(() => console.log('deactivate buzzer')).catch(err => console.error('buzzer error', err));
     reader
       .on('error', err => console.error('reader error', err))
       .on('end', () => console.log(`${reader.reader.name} device removed`))

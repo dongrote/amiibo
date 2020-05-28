@@ -9,9 +9,23 @@ class NTAG215 extends EventEmitter {
     this.reader.on('error', err => this.emit('error', err));
   }
 
+  crc(buf) {
+    let crc = 0x6363;
+    buf.forEach(b => {
+      x = (b ^ (crc & 0x00ff));
+      y = (x ^ (x << 4));
+      crc = (crc >> 8) ^ (y << 8) ^ (y << 3) ^ (y >> 4);
+    });
+    return Buffer.from([crc & 0xff, (crc >> 8) & 0xff]);
+  }
+
+  async transmit(buf, responseLength) {
+    return await this.reader.transmit(Buffer.concat([buf, this.crc(buf)]), responseLength);
+  }
+
   async getVersion() {
     try {
-      const rx = await this.reader.transmit(Buffer.from([0x60]), 8);
+      const rx = await this.transmit(Buffer.from([0x60]), 8);
       if (rx.length !== 8) {
         throw new Error('GET_VERSION error');
       }
