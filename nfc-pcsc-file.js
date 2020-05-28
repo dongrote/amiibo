@@ -18,10 +18,12 @@ db
           .then(id => db.lookupAmiiboById(id))
           .then(a => console.log(`amiibo: ${_.get(a, 'name', 'unknown')}`))
           .then(() => {
-            const amiiboExport = new core.Amiibo(writer);
-            return amiiboExport.write(reader.buffer)
-              .then(() => writer.export(process.argv[3]))
-              .then(() => console.log('exported new amiibo to ', process.argv[3]));
+            if (process.argv[3]) {
+              const amiiboExport = new core.Amiibo(writer);
+              return amiiboExport.write(reader.buffer)
+                .then(() => writer.export(process.argv[3]))
+                .then(() => console.log('exported new amiibo to ', process.argv[3]));  
+            }
           });
       });
   })
