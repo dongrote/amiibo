@@ -10,9 +10,13 @@ class NTAG215 extends EventEmitter {
   }
 
   async getVersion() {
-    const rx = await this.reader.transmit(Buffer.from([0x60]), 8);
-    if (rx.length !== 8) {
-      throw new Error('GET_VERSION error');
+    try {
+      const rx = await this.reader.transmit(Buffer.from([0x60]), 8);
+      if (rx.length !== 8) {
+        throw new Error('GET_VERSION error');
+      }
+    } catch (err) {
+      throw err;
     }
     return rx;
   }
