@@ -9,8 +9,6 @@ class NTAG215 extends EventEmitter {
     this.reader.on('error', err => this.emit('error', err));
   }
 
-
-
   iso1443a_crc(buf) {
     let crc = 0x6363;
     buf.forEach(b => {
@@ -52,9 +50,11 @@ class NTAG215 extends EventEmitter {
     return rx;
   }
 
-  async validate() {
-    const versionInfo = await this.getVersion();
-    console.dir(versionInfo);
+  async validateBlankTag() {
+    const lockBytes = await this.lockBytes();
+    if (lockBytes[0] === 0x0f && lockBytes[1] === 0xe0) {
+      throw new Error('tag is already an Amiibo');
+    }
   }
 
   async serialNumber() {

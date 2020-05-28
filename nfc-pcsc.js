@@ -19,11 +19,9 @@ nfc
         reader.read(0, 540)
           .then(data => {
             const amiibo = new core.Amiibo(reader);
-            return amiibo.validate()
-              .then(() => {
-                console.log('NTAG215 validated');
-                return amiibo.id();
-              })
+            return amiibo.validateBlankTag()
+              .catch(err => console.error('tag is locked', err))
+              .then(() => amiibo.id())
               .then(id => {
                 console.log('id: ', id);
                 return db.lookupAmiiboById(id);
