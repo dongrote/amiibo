@@ -39,6 +39,8 @@ class FileTagReader extends EventEmitter {
       if ((blockNumber * this.PAGE_SIZE) + dataBuf.length > this.TOTAL_LENGTH) {
         return reject(new Error(`Data will exceed writeable range`));
       }
+      console.dir(dataBuf);
+      console.dir(blockNumber * this.PAGE_SIZE);
       this.buffer.write(dataBuf, blockNumber * this.PAGE_SIZE);
       resolve();
     });
