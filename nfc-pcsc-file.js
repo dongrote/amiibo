@@ -20,7 +20,7 @@ db
           .then(() => {
             const amiiboExport = new core.Amiibo(writer);
             return amiiboExport.write(reader.buffer)
-              .then(() => amiiboExport.export(process.argv[3]))
+              .then(() => writer.export(process.argv[3]))
               .then(() => console.log('exported new amiibo to ', process.argv[3]));
           });
       });
