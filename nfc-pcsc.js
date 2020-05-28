@@ -19,7 +19,11 @@ nfc
         reader.read(0, 540)
           .then(data => {
             const amiibo = new core.Amiibo(reader);
-            return amiibo.id()
+            return amiibo.validate()
+              .then(() => {
+                console.log('NTAG215 validated');
+                return amiibo.id();
+              })
               .then(id => {
                 console.log('id: ', id);
                 return db.lookupAmiiboById(id);
