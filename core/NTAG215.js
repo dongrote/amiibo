@@ -22,7 +22,7 @@ class NTAG215 extends EventEmitter {
   }
 
   async validate() {
-    const versionInfo = this.getVersion();
+    const versionInfo = await this.getVersion();
     console.dir(versionInfo);
   }
 
