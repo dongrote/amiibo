@@ -9,11 +9,16 @@ class NTAG215 extends EventEmitter {
     this.reader.on('error', err => this.emit('error', err));
   }
 
-  async validate() {
-    const versionInfo = this.reader.transmit(Buffer.from([0x60]), 8);
-    if (versionInfo.length !== 8) {
-      throw new Error('tag version error');
+  async getVersion() {
+    const rx = await this.reader.transmit(Buffer.from([0x60]), 8);
+    if (rx.length !== 8) {
+      throw new Error('GET_VERSION error');
     }
+    return rx;
+  }
+
+  async validate() {
+    const versionInfo = this.getVersion();
     console.dir(versionInfo);
   }
 
