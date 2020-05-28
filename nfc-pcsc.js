@@ -23,7 +23,9 @@ nfc
               .then(id => db.lookupAmiiboById(id))
               .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
               .then(() => amiibo.password())
-              .then(pw => console.log(`amiibo password: ${pw.toString('hex')}`));
+              .then(pw => console.log(`amiibo password: ${pw.toString('hex')}`))
+              .then(() => amiibo.imageUrl())
+              .then(url => console.log('image url: ', url));
           })
           .then(() => {
             const ntag = new core.NTAG215(reader);
