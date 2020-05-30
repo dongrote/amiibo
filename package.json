@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build-and-install": "npm --prefix webui run build && rm -rf public && mkdir public && cp -r webui/build/* public/",
+    "start": "node ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
