@@ -9,7 +9,26 @@ class App extends Component {
     readerPresent: false,
     cardPresent: false,
   };
-  componentDidMount() {
+
+  async fetchSystemState() {
+    var res = await fetch('/api/system/state');
+    if (res.ok) {
+      return await res.json();
+    }
+    return null;
+  }
+
+  async updateSystemState() {
+    var state = await this.fetchSystemState();
+    if (state) {
+      this.setState({
+        readerPresent: state.reader.connected,
+        cardPresent: state.card.present,
+      });
+    }
+  }
+
+  async componentDidMount() {
     socket
       .on('reader', state => {
         this.setState({readerPresent: state.connected});
@@ -17,7 +36,9 @@ class App extends Component {
       .on('card', state => {
         this.setState({cardPresent: state.present});
       });
+    await this.updateSystemState();
   }
+
   render() {
     return (
       <Container>
