@@ -24,9 +24,10 @@ app.use((err, req, res, next) => {
 });
 
 
+
 const amiiboDb = new core.AmiiboDatabase();
 
-amiiboDb
+core.AmiiboDatabase
   .load('./amiibo.json')
   .then(() => {
     const {NFC} = require('nfc-pcsc');

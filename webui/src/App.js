@@ -7,6 +7,7 @@ const socket = io();
 class App extends Component {
   state = {
     amiiboImageUrl: null,
+    amiiboCharacterName: null,
     readerPresent: false,
     cardPresent: false,
   };
@@ -26,6 +27,7 @@ class App extends Component {
         readerPresent: state.reader.connected,
         cardPresent: state.card.present,
         amiiboImageUrl: state.amiibo ? state.amiibo.imageUrl : null,
+        amiiboCharacterName: state.amiibo ? state.amiibo.character.name : null,
       });
     }
   }
@@ -38,7 +40,7 @@ class App extends Component {
       .on('card', state => {
         this.setState({cardPresent: state.present});
         if (!state.present) {
-          this.setState({amiiboImageUrl: null});
+          this.setState({amiiboImageUrl: null, amiiboCharacterName: null});
         }
       })
       .on('amiibo', state => {
@@ -62,6 +64,7 @@ class App extends Component {
           </List.Item>
           {this.state.amiiboImageUrl && (
             <List.Item>
+              <Header>{this.state.amiiboCharacterName}</Header>
               <Image src={this.state.amiiboImageUrl} />
             </List.Item>
           )}
