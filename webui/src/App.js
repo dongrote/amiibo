@@ -60,7 +60,7 @@ class App extends Component {
           </List.Item>
           <List.Item>
             <List.Icon name='id card' />
-            <List.Content>Card present: <Icon name={this.state.cardPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
+            <List.Content>Amiibo present: <Icon name={this.state.cardPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
           </List.Item>
           {this.state.amiiboImageUrl && (
             <List.Item>
