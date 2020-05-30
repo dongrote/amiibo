@@ -23,10 +23,6 @@ app.use((err, req, res, next) => {
   res.status(_.get(err, 'statusCode', 500)).json({err});
 });
 
-
-
-const amiiboDb = new core.AmiiboDatabase();
-
 core.AmiiboDatabase
   .load('./amiibo.json')
   .then(() => {
