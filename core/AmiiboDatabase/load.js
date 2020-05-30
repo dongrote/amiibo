@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs'),
-  state = require('./state');
+  state = require('./state'),
+  log = require('debug-logger')('core:AmiiboDatabase:load');
 
 exports = module.exports = dbpath => new Promise((resolve, reject) => {
   let jsonData = Buffer.from('');
