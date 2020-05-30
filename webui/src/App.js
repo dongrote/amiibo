@@ -44,7 +44,7 @@ class App extends Component {
         }
       })
       .on('amiibo', state => {
-        this.setState({amiiboImageUrl: state.imageUrl});
+        this.setState({amiiboImageUrl: state.imageUrl, amiiboCharacterName: state.character.name});
       });
     await this.updateSystemState();
   }
