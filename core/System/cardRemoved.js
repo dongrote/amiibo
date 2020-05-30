@@ -1,6 +1,9 @@
 'use strict';
-const Websockets = require('../Websockets');
+const state = require('./state'),
+  Websockets = require('../Websockets');
 
 exports = module.exports = () => {
   Websockets.publish('card', {present: false});
+  state.card.card = null;
+  state.card.present = false;
 };
