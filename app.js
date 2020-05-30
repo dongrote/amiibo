@@ -36,9 +36,9 @@ amiiboDb
         core.System.readerAttached(reader);
         reader
           .on('error', log.error)
-          .on('end', () => core.System.readerDetached(card))
-          .on('card', card => core.System.cardPresented(card))
-          .on('card.off', card => core.System.cardRemoved(card));
+          .on('end', () => core.System.readerDetached(reader))
+          .on('card', card => core.System.cardPresented(reader, card))
+          .on('card.off', card => core.System.cardRemoved(reader, card));
       })
       .on('error', log.error);
   })

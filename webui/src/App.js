@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import {Container, Header, List, Icon} from 'semantic-ui-react';
+import {Container, Header, List, Icon, Image} from 'semantic-ui-react';
 
 const socket = io();
 
 class App extends Component {
   state = {
+    amiiboImageUrl: null,
     readerPresent: false,
     cardPresent: false,
   };
@@ -35,6 +36,12 @@ class App extends Component {
       })
       .on('card', state => {
         this.setState({cardPresent: state.present});
+        if (!state.present) {
+          this.setState({amiiboImageUrl: null});
+        }
+      })
+      .on('amiibo', state => {
+        this.setState({amiiboImageUrl: state.imageUrl});
       });
     await this.updateSystemState();
   }
@@ -52,6 +59,11 @@ class App extends Component {
             <List.Icon name='id card' />
             <List.Content>Card present: <Icon name={this.state.cardPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
           </List.Item>
+          {this.state.amiiboImageUrl && (
+            <List.Item>
+              <Image src={this.state.amiiboUrl} />
+            </List.Item>
+          )}
         </List>
       </Container>
     );
