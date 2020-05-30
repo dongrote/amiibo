@@ -25,6 +25,7 @@ class App extends Component {
       this.setState({
         readerPresent: state.reader.connected,
         cardPresent: state.card.present,
+        amiiboImageUrl: state.amiibo ? state.amiibo.imageUrl : null,
       });
     }
   }
