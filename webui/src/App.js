@@ -61,7 +61,7 @@ class App extends Component {
           </List.Item>
           {this.state.amiiboImageUrl && (
             <List.Item>
-              <Image src={this.state.amiiboUrl} />
+              <Image src={this.state.amiiboImageUrl} />
             </List.Item>
           )}
         </List>
