@@ -2,12 +2,12 @@
 const _ = require('lodash');
 const {NFC} = require('nfc-pcsc');
 const nfc = new NFC();
-const core = require('./core');
+const core = require('../core');
 
 
 const db = new core.AmiiboDatabase();
 
-db.load('./amiibo.json').catch(console.error);
+db.load('../amiibo.json').catch(console.error);
     
 
 nfc
