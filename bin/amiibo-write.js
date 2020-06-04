@@ -16,6 +16,7 @@ amiiboBin
     console.dir(amiiboBin.data);
     nfc
       .on('reader', reader => {
+        console.log('reader', reader.reader.name);
         reader.on('card', () => {
           console.log('card presented');
           const amiiboTag = new core.Amiibo(reader);
