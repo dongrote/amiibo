@@ -17,6 +17,7 @@ amiiboBin
     nfc
       .on('reader', reader => {
         reader.on('card', () => {
+          console.log('card presented');
           const amiiboTag = new core.Amiibo(reader);
           amiiboTag.on('error', err => {
             console.error('amiibo error', err);
@@ -29,6 +30,7 @@ amiiboBin
               process.exit(1);
             });
         });
+        reader.on('card.off', () => console.log('card removed'));
       })
       .on('error', err => {
         console.error(err);
