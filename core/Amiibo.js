@@ -71,12 +71,18 @@ class Amiibo extends NTAG215 {
   }
 
   async write(amiiboData) {
+    console.log('validating tag is blank');
     await this.validateBlankTag();
+    console.log('tag is blank');
     await this.writeUserMemory(amiiboData);
+    console.log('wrote user memory');
     const password = await this.password();
     await this.writePACK(Buffer.from([0x80, 0x80]));
+    console.log('wrote PACK');
     await this.writePassword(password);
+    console.log('wrote password');
     await this.writeLockInfo();
+    console.log('wrote lock info');
   }
 
 }

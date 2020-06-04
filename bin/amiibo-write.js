@@ -1,9 +1,7 @@
 'use strict';
-/*
 const _ = require('lodash');
 const {NFC} = require('nfc-pcsc');
 const nfc = new NFC();
-*/
 const core = require('../core');
 
 const amiiboBinFilePath = process.argv[2];
@@ -16,7 +14,24 @@ amiiboBin
   .on('open', () => {
     console.log(`opened ${amiiboBin.path}`);
     console.dir(amiiboBin.data);
-    process.exit(0);
+    nfc
+      .on('reader', reader => {
+        const amiiboTag = new core.Amiibo(reader);
+        amiiboTag.on('error', err => {
+          console.error('amiibo error', err);
+          process.exit(1);
+        });
+        amiiboTag.validateBlankTag()
+          .then(() => process.exit(0))
+          .catch(err => {
+            console.error('validate error', err);
+            process.exit(1);
+          });
+      })
+      .on('error', err => {
+        console.error(err);
+        process.exit(1);
+      });
   });
 
 /*
