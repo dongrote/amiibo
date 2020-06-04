@@ -1,11 +1,11 @@
 'use strict';
 const _ = require('lodash');
 const {NFC} = require('nfc-pcsc');
-const nfc = new NFC();
 const core = require('../core');
 
 const amiiboBinFilePath = process.argv[2];
 const amiiboBin = new core.AmiiboBinFile(amiiboBinFilePath);
+
 amiiboBin
   .on('error', err => {
     console.error(err);
@@ -13,7 +13,7 @@ amiiboBin
   })
   .on('open', () => {
     console.log(`opened ${amiiboBin.path}`);
-    console.dir(amiiboBin.data);
+    const nfc = new NFC();
     nfc
       .on('reader', reader => {
         console.log('reader', reader.reader.name);
