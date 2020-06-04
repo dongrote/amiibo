@@ -6,7 +6,6 @@ const nfc = new NFC();
 */
 const core = require('../core');
 
-console.dir(process.argv[2]);
 const amiiboBinFilePath = process.argv[2];
 const amiiboBin = new core.AmiiboBinFile(amiiboBinFilePath);
 amiiboBin
@@ -16,6 +15,7 @@ amiiboBin
   })
   .on('open', () => {
     console.log(`opened ${amiiboBin.path}`);
+    console.dir(amiiboBin.data);
     process.exit(0);
   });
 
