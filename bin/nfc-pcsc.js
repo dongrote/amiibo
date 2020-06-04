@@ -12,10 +12,12 @@ db.load('../amiibo.json').catch(console.error);
 
 nfc
   .on('reader', reader => {
+    console.log(`${reader.reader.name} device connected`);
     reader
       .on('error', err => console.error('reader error', err))
       .on('end', () => console.log(`${reader.reader.name} device removed`))
       .on('card', card => {
+
         reader.read(0, 540)
           .then(data => {
             const amiibo = new core.Amiibo(reader);
