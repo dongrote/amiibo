@@ -5,10 +5,10 @@ const nfc = new NFC();
 const core = require('../core');
 
 
+/*
 const db = new core.AmiiboDatabase();
-
 db.load('../amiibo.json').catch(console.error);
-    
+*/
 
 nfc
   .on('reader', reader => {
