@@ -16,17 +16,19 @@ amiiboBin
     console.dir(amiiboBin.data);
     nfc
       .on('reader', reader => {
-        const amiiboTag = new core.Amiibo(reader);
-        amiiboTag.on('error', err => {
-          console.error('amiibo error', err);
-          process.exit(1);
-        });
-        amiiboTag.validateBlankTag()
-          .then(() => process.exit(0))
-          .catch(err => {
-            console.error('validate error', err);
+        reader.on('card', () => {
+          const amiiboTag = new core.Amiibo(reader);
+          amiiboTag.on('error', err => {
+            console.error('amiibo error', err);
             process.exit(1);
           });
+          amiiboTag.validateBlankTag()
+            .then(() => process.exit(0))
+            .catch(err => {
+              console.error('validate error', err);
+              process.exit(1);
+            });
+        });
       })
       .on('error', err => {
         console.error(err);

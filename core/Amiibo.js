@@ -44,10 +44,12 @@ class Amiibo extends NTAG215 {
   }
 
   async validateBlankTag() {
+    console.log('validating tag is blank');
     const lockBytes = await this.lockBytes();
     if (lockBytes[0] === 0x0f && lockBytes[1] === 0xe0) {
       throw new Error('tag is already an Amiibo');
     }
+    console.log('tag is blank');
   }
 
   async writeUserMemory(amiiboData) {
