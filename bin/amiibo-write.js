@@ -25,7 +25,7 @@ amiiboBin
             process.exit(1);
           });
           amiiboTag.validateBlankTag()
-            .then(() => process.exit(0))
+            .then(() => amiiboTag.write(amiiboBin.data))
             .catch(err => {
               console.error('validate error', err);
               process.exit(1);
