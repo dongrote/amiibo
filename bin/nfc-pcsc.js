@@ -5,7 +5,7 @@ const core = require('../core');
 
 
 core.AmiiboDatabase
-  .load('../amiibo.json')
+  .load('./amiibo.json')
   .then(() => {
     const nfc = new NFC();
     nfc
