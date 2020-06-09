@@ -77,6 +77,7 @@ class Amiibo extends NTAG215 {
   async patchUID(amiiboData) {
     const uid = await this.serialNumber();
     const plaintext = await amiitool.decrypt(amiiboData);
+    console.log(`patching amiibo with uid (${uid.toString('hex')})`);
     for(var i = 0; i < uid.length; i++) {
       plaintext.writeUInt8(uid[i], 0x1d4 + i);
     }
