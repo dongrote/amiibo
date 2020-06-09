@@ -14,9 +14,8 @@ exports = module.exports = plaintextAmiiboData => new Promise((resolve, reject) 
   child.stderr.on('data', chunk => console.log(chunk.toString()));
   child.stdout
     .on('data', chunk => {
-      encrypted = Buffer.concat(encrypted, chunk);
+      encrypted = Buffer.concat([encrypted, chunk]);
     })
     .on('end', () => resolve(encrypted));
-  child.stdin.write(plaintextAmiiboData);
-  child.stdin.end();
+  child.stdin.end(plaintextAmiiboData);
 });
