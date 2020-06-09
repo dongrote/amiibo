@@ -9,7 +9,7 @@ exports = module.exports = plaintextAmiiboData => new Promise((resolve, reject) 
     '-k',
     env.amiitoolKeySetFilePath(),
   ];
-  const child = cp.spawn('amiitool', args, {stdio: ['pipe', 'pipe', 'ignore']})
+  const child = cp.spawn('amiitool', args, {stdio: 'pipe'})
     .on('error', reject);
   child.stderr.on('data', chunk => console.log(chunk.toString()));
   child.stdout
