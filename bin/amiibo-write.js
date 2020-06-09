@@ -24,10 +24,9 @@ amiiboBin
             console.error('amiibo error', err);
             process.exit(1);
           });
-          amiiboTag.validateBlankTag()
-            .then(() => amiiboTag.write(amiiboBin.data))
+          amiiboTag.amiiboTag.write(amiiboBin.data)
             .catch(err => {
-              console.error('validate error', err);
+              console.error('write error', err);
               process.exit(1);
             });
         });
