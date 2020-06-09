@@ -1,5 +1,7 @@
 'use strict';
-const NTAG215 = require('./NTAG215');
+const amiitool = require('./Amiitool'),
+  cp = require('child_process'),
+  NTAG215 = require('./NTAG215');
 
 class Amiibo extends NTAG215 {
   HEAD_BLOCK_NUMBER = 0x15;
@@ -72,11 +74,22 @@ class Amiibo extends NTAG215 {
     await this.reader.write(this.CFG1_PAGENO, Buffer.from([0x5f, 0x00, 0x00, 0x00]));
   }
 
+  async patchUID(amiiboData) {
+    const uid = await this.serialNumber();
+    const plaintext = await amiitool.decrypt(amiiboData);
+    for(var i = 0; i < uid.length; i++) {
+      plaintext.writeUInt8(uid[i], 0x1d4 + i);
+    }
+    const encrypted = await amiitool.encrypt(plaintext);
+    return encrypted;
+  }
+
   async write(amiiboData) {
     console.log('validating tag is blank');
     await this.validateBlankTag();
     console.log('tag is blank');
-    await this.writeUserMemory(amiiboData);
+    const patchedAmiiboData = await this.patchUID(amiiboData);
+    await this.writeUserMemory(patchedAmiiboData);
     console.log('wrote user memory');
     const password = await this.password();
     await this.writePACK(Buffer.from([0x80, 0x80]));
