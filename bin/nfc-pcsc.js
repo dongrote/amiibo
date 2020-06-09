@@ -23,6 +23,8 @@ nfc
             const amiibo = new core.Amiibo(reader);
             return amiibo.validateBlankTag()
               .catch(err => console.error('tag is locked', err))
+              .then(() => amiibo.serialNumber())
+              .then(serialNumber => console.log('uid', serialNumber))
               .then(() => amiibo.id())
               .then(id => {
                 console.log('id: ', id);
