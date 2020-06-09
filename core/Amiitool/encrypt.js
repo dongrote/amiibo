@@ -11,6 +11,7 @@ exports = module.exports = plaintextAmiiboData => new Promise((resolve, reject) 
   ];
   const child = cp.spawn('amiitool', args, {stdio: ['pipe', 'pipe', 'ignore']})
     .on('error', reject);
+  child.stderr.on('data', chunk => console.log(chunk.toString()));
   child.stdout
     .on('data', chunk => {
       encrypted = Buffer.concat(encrypted, chunk);
