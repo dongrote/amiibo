@@ -4,8 +4,7 @@ const {NFC} = require('nfc-pcsc');
 const core = require('../core');
 
 
-const db = new core.AmiiboDatabase();
-db
+core.AmiiboDatabase
   .load('../amiibo.json')
   .then(() => {
     const nfc = new NFC();
@@ -26,7 +25,7 @@ db
                   .then(() => amiibo.id())
                   .then(id => {
                     console.log('id: ', id);
-                    return db.lookupAmiiboById(id);
+                    return core.AmiiboDatabase.lookupAmiiboById(id);
                   })
                   .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
                   .then(() => amiibo.password())
