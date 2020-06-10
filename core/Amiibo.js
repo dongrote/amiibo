@@ -1,6 +1,5 @@
 'use strict';
 const amiitool = require('./Amiitool'),
-  cp = require('child_process'),
   NTAG215 = require('./NTAG215');
 
 class Amiibo extends NTAG215 {
@@ -75,14 +74,19 @@ class Amiibo extends NTAG215 {
   }
 
   async patchUID(amiiboData) {
-    const uid = await this.serialNumber();
+    const firstNine = await this.reader.read(0, 9);
     const plaintext = await amiitool.decrypt(amiiboData);
-    console.log(`patching amiibo with uid (${uid.toString('hex')})`);
-    for(var i = 0; i < uid.length; i++) {
-      plaintext.writeUInt8(uid[i], 0x1d4 + i);
+    console.log(`patching amiibo with uid (${firstNine.slice(0, 8).toString('hex')})`);
+    for(var i = 0; i < firstNine.length - 1; i++) {
+      plaintext.writeUInt8(firstNine[i], 0x1d4 + i);
     }
-    const encrypted = await amiitool.encrypt(plaintext);
-    return encrypted;
+    /*
+     really not sure why they write the ninth byte to offset zero before the encrypt,
+     since that byte location is not writable on the NTAG215, but they do it in the TagMo
+     code; I could see it maybe having some sort of affect on blockchain crypto
+    */
+   plaintext[0] = firstNine[8];
+   return await amiitool.encrypt(plaintext);
   }
 
   async write(amiiboData) {

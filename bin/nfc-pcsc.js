@@ -21,10 +21,6 @@ core.AmiiboDatabase
                 const amiibo = new core.Amiibo(reader);
                 return amiibo.validateBlankTag()
                   .catch(err => console.error('tag is locked', err))
-                  .then(() => amiibo.reader.read(0, 9))
-                  .then(ninebytes => console.dir(ninebytes))
-                  .then(() => amiibo.serialNumber())
-                  .then(serialNumber => console.log('uid', serialNumber))
                   .then(() => core.Amiitool.decrypt(data))
                   .then(decrypted => {
                     console.log('first 9 bytes: ', data.slice(0, 9));
@@ -35,6 +31,11 @@ core.AmiiboDatabase
                     console.log('offset: ', (amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4)
                     console.dir(decrypted.slice((amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4,
                       (amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4 + 9));
+                    return core.Amiitool.encrypt(data);
+                  })
+                  .then(encrypted => {
+                    console.log('re-encrypted:');
+                    console.dir(encrypted);
                   })
                   .then(() => amiibo.id())
                   .then(id => {
@@ -42,8 +43,6 @@ core.AmiiboDatabase
                     return core.AmiiboDatabase.lookupById(id);
                   })
                   .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
-                  .then(() => amiibo.password())
-                  .then(pw => console.log(`amiibo password: ${pw.toString('hex')}`))
                   .then(() => amiibo.imageUrl())
                   .then(url => console.log('image url: ', url));
               })
