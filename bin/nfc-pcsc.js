@@ -25,6 +25,7 @@ core.AmiiboDatabase
                   .then(serialNumber => console.log('uid', serialNumber))
                   .then(() => core.Amiitool.decrypt(data))
                   .then(decrypted => {
+                    console.log('first 9 bytes: ', data.slice(0, 9));
                     console.log('plaintext: ', decrypted.toString('hex'));
                     console.log('plaintext length: ', decrypted.length);
                     console.log('offset: ', 0x1d4);
@@ -36,7 +37,7 @@ core.AmiiboDatabase
                   .then(() => amiibo.id())
                   .then(id => {
                     console.log('id: ', id);
-                    return core.AmiiboDatabase.lookupAmiiboById(id);
+                    return core.AmiiboDatabase.lookupById(id);
                   })
                   .then(amiibo => console.log(`amiibo:`, _.get(amiibo, 'name', 'unknown')))
                   .then(() => amiibo.password())
