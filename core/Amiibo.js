@@ -1,5 +1,6 @@
 'use strict';
-const NTAG215 = require('./NTAG215');
+const amiitool = require('./Amiitool'),
+  NTAG215 = require('./NTAG215');
 
 class Amiibo extends NTAG215 {
   HEAD_BLOCK_NUMBER = 0x15;
@@ -44,10 +45,12 @@ class Amiibo extends NTAG215 {
   }
 
   async validateBlankTag() {
+    console.log('validating tag is blank');
     const lockBytes = await this.lockBytes();
     if (lockBytes[0] === 0x0f && lockBytes[1] === 0xe0) {
       throw new Error('tag is already an Amiibo');
     }
+    console.log('tag is blank');
   }
 
   async writeUserMemory(amiiboData) {
@@ -70,13 +73,36 @@ class Amiibo extends NTAG215 {
     await this.reader.write(this.CFG1_PAGENO, Buffer.from([0x5f, 0x00, 0x00, 0x00]));
   }
 
+  async patchUID(amiiboData) {
+    const firstNine = await this.reader.read(0, 9);
+    const plaintext = await amiitool.decrypt(amiiboData);
+    console.log(`patching amiibo with uid (${firstNine.slice(0, 8).toString('hex')})`);
+    for(var i = 0; i < firstNine.length - 1; i++) {
+      plaintext.writeUInt8(firstNine[i], 0x1d4 + i);
+    }
+    /*
+     really not sure why they write the ninth byte to offset zero before the encrypt,
+     since that byte location is not writable on the NTAG215, but they do it in the TagMo
+     code; I could see it maybe having some sort of affect on blockchain crypto
+    */
+   plaintext[0] = firstNine[8];
+   return await amiitool.encrypt(plaintext);
+  }
+
   async write(amiiboData) {
+    console.log('validating tag is blank');
     await this.validateBlankTag();
-    await this.writeUserMemory(amiiboData);
+    console.log('tag is blank');
+    const patchedAmiiboData = await this.patchUID(amiiboData);
+    await this.writeUserMemory(patchedAmiiboData);
+    console.log('wrote user memory');
     const password = await this.password();
     await this.writePACK(Buffer.from([0x80, 0x80]));
+    console.log('wrote PACK');
     await this.writePassword(password);
+    console.log('wrote password');
     await this.writeLockInfo();
+    console.log('wrote lock info');
   }
 
 }
