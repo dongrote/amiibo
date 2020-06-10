@@ -9,6 +9,9 @@ exports = module.exports = encryptedAmiiboData => new Promise((resolve, reject) 
     '-k',
     env.amiitoolKeySetFilePath(),
   ];
+  if (encryptedAmiiboData.length !== 540) {
+    return reject(new Error(`Expected Amiibo Data length 540; got ${encryptedAmiiboData.length}`));
+  }
   const child = cp.spawn('amiitool', args, {stdio: 'pipe'})
     .on('error', reject);
   child.stderr.on('data', chunk => console.log(chunk.toString()));
