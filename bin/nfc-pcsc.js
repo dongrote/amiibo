@@ -27,8 +27,11 @@ core.AmiiboDatabase
                   .then(decrypted => {
                     console.log('plaintext: ', decrypted.toString('hex'));
                     console.log('plaintext length: ', decrypted.length);
-                    console.dir(decrypted.slice(0x1d4, 8));
-                    console.dir(decrypted.slice(amiibo.CC_PAGENO * amiibo.PAGE_SIZE, 8));
+                    console.log('offset: ', 0x1d4);
+                    console.dir(decrypted.slice(0x1d4, 0x1d4 + 8));
+                    console.log('offset: ', (amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4)
+                    console.dir(decrypted.slice((amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4,
+                      (amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4 + 8));
                   })
                   .then(() => amiibo.id())
                   .then(id => {
