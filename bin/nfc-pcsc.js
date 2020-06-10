@@ -21,6 +21,8 @@ core.AmiiboDatabase
                 const amiibo = new core.Amiibo(reader);
                 return amiibo.validateBlankTag()
                   .catch(err => console.error('tag is locked', err))
+                  .then(() => amiibo.reader.read(0, 9))
+                  .then(ninebytes => console.dir(ninebytes))
                   .then(() => amiibo.serialNumber())
                   .then(serialNumber => console.log('uid', serialNumber))
                   .then(() => core.Amiitool.decrypt(data))
