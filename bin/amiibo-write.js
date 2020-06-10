@@ -26,7 +26,10 @@ amiiboBin
             process.exit(1);
           });
           amiiboTag.write(amiiboBin.data)
-            .then(() => console.log('write complete'))
+            .then(() => {
+              console.log('write complete');
+              process.exit(0);
+            })
             .catch(err => {
               console.error('write error', err);
               process.exit(1);
