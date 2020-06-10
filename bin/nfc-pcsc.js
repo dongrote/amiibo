@@ -28,9 +28,6 @@ core.AmiiboDatabase
                     console.log('plaintext length: ', decrypted.length);
                     console.log('offset: ', 0x1d4);
                     console.dir(decrypted.slice(0x1d4, 0x1d4 + 9));
-                    console.log('offset: ', (amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4)
-                    console.dir(decrypted.slice((amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4,
-                      (amiibo.CC_PAGENO * amiibo.PAGE_SIZE) + 0x1d4 + 9));
                     return core.Amiitool.encrypt(data);
                   })
                   .then(encrypted => {
