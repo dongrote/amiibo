@@ -47,11 +47,8 @@ core.AmiiboDatabase
                 const ntag = new core.NTAG215(reader);
                 return ntag.serialNumber()
                   .then(sn => console.log('serial number: ', sn.toString('hex')))
-                  .then(() => Promise.all([ntag.memorySize(), ntag.fullDump()]))
-                  .then(([size, all]) => {
-                    console.log(`memory size`, size);
-                    console.dir(all);
-                  });
+                  .then(() => ntag.fullDump())
+                  .then(all => console.dir(all));
               })
               .catch(err => console.error('read error', err));
           });
