@@ -24,7 +24,8 @@ amiiboBin
             console.error('amiibo error', err);
             process.exit(1);
           });
-          amiiboTag.amiiboTag.write(amiiboBin.data)
+          amiiboTag.write(amiiboBin.data)
+            .then(() => console.log('write complete'))
             .catch(err => {
               console.error('write error', err);
               process.exit(1);
