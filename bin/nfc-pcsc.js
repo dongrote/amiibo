@@ -1,4 +1,5 @@
 'use strict';
+require('dotenv').config();
 const _ = require('lodash');
 const {NFC} = require('nfc-pcsc');
 const core = require('../core');
