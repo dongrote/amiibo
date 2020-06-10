@@ -24,7 +24,11 @@ core.AmiiboDatabase
                   .then(() => amiibo.serialNumber())
                   .then(serialNumber => console.log('uid', serialNumber))
                   .then(() => core.Amiitool.decrypt(data))
-                  .then(decrypted => console.log('plaintext: ', decrypted.toString('hex')))
+                  .then(decrypted => {
+                    console.log('plaintext: ', decrypted.toString('hex'));
+                    console.dir(decrypted.slice(0x1d4, 8));
+                    console.dir(decrypted.slice(amiibo.CC_PAGENO * amiibo.PAGE_SIZE, 8));
+                  })
                   .then(() => amiibo.id())
                   .then(id => {
                     console.log('id: ', id);
