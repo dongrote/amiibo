@@ -22,6 +22,8 @@ core.AmiiboDatabase
                   .catch(err => console.error('tag is locked', err))
                   .then(() => amiibo.serialNumber())
                   .then(serialNumber => console.log('uid', serialNumber))
+                  .then(() => core.Amiitool.decrypt(data))
+                  .then(decrypted => console.log('plaintext: ', decrypted.toString('hex')))
                   .then(() => amiibo.id())
                   .then(id => {
                     console.log('id: ', id);
