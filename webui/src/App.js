@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import {Container, Header, List, Icon, Image} from 'semantic-ui-react';
 import ReaderView from './ReaderView';
 import WriterView from './WriterView';
+import ReadWriteToggle from './ReadWriteToggle';
 
 const socket = io();
 
@@ -67,7 +68,7 @@ class App extends Component {
 
   render() {
     return (
-      <Container>
+      <Container text>
         <Header>Amiibo App</Header>
         <List divided>
           <List.Item>
@@ -79,8 +80,9 @@ class App extends Component {
             <List.Content>Amiibo present: <Icon name={this.state.cardPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name='configure' />
-            <List.Content>App Setting: {this.state.appSetting}</List.Content>
+            <List.Content>
+              <ReadWriteToggle setting={this.state.appSetting} />
+            </List.Content>
           </List.Item>
           <List.Item>
             {this.state.appSetting === 'read' && (

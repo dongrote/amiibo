@@ -11,7 +11,9 @@ const availablePurposes = ['read', 'write'];
 class System extends EventEmitter {
   constructor() {
     super();
-    this.writeConfiguration = {};
+    this.writeConfiguration = {
+      data: Buffer.allocUnsafe(0),
+    };
     this.timeouts = {write: null};
     this.purpose = 'read';
     this.readers = {};
@@ -119,9 +121,10 @@ class System extends EventEmitter {
     this.amiibo = new Amiibo(reader);
     this.amiibo.onWriteProgress(message => this.emit('write-progress', message));
     try {
-      await this.amiibo.write(amiiboWriteData);
+      await this.amiibo.write(this.writeConfiguration.data);
     } catch (err) {
       this.amiibo = null;
+      this.emit('write-progress', `error: ${err.message}`);
       throw err;
     }
   }
