@@ -26,17 +26,32 @@ app.use((err, req, res, next) => {
 core.AmiiboDatabase
   .load('./amiibo.json')
   .then(() => {
-    const {NFC} = require('nfc-pcsc');
-    const nfc = new NFC();
-    nfc
-      .on('reader', reader => {
-        core.System.readerAttached(reader);
-        reader
-          .on('error', log.error)
-          .on('end', () => core.System.readerDetached(reader))
-          .on('card', card => core.System.cardPresented(reader, card))
-          .on('card.off', card => core.System.cardRemoved(reader, card));
+    core.System
+      .on('error', log.error)
+      .on('reader', message => {
+        log.info('reader', message);
+        core.Websockets.publish('reader', message);
       })
-      .on('error', log.error);
+      .on('write-progress', message => {
+        log.info(`write progress: ${message}`);
+        core.Websockets.publish('write-progress', message);
+      })
+      .on('amiibo', (amiiboId, amiiboCharacterName, amiibo) => {
+        log.info('amiibo', amiiboId);
+        amiibo.imageUrl()
+          .then(imageUrl => {
+            core.Websockets.publish('card', {present: true});
+            core.Websockets.publish('amiibo', {
+              imageUrl,
+              character: {name: amiiboCharacterName},
+            });
+          })
+          .catch(log.error);
+      })
+      .on('amiibo.removed', () => {
+        log.info('amiibo removed');
+        core.Websockets.publish('card', {present: false});
+        core.Websockets.publish('amiibo', null);
+      });
   })
   .catch(log.error);

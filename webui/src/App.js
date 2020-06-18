@@ -10,6 +10,7 @@ class App extends Component {
     amiiboCharacterName: null,
     readerPresent: false,
     cardPresent: false,
+    appSetting: null,
   };
 
   async fetchSystemState() {
@@ -28,6 +29,7 @@ class App extends Component {
         cardPresent: state.card.present,
         amiiboImageUrl: state.amiibo ? state.amiibo.imageUrl : null,
         amiiboCharacterName: state.amiibo ? state.amiibo.character.name : null,
+        appSetting: state.purpose,
       });
     }
   }
@@ -44,7 +46,10 @@ class App extends Component {
         }
       })
       .on('amiibo', state => {
-        this.setState({amiiboImageUrl: state.imageUrl, amiiboCharacterName: state.character.name});
+        this.setState({
+          amiiboImageUrl: state ? state.imageUrl : null,
+          amiiboCharacterName: state ? state.character.name : null,
+        });
       });
     await this.updateSystemState();
   }
@@ -61,6 +66,10 @@ class App extends Component {
           <List.Item>
             <List.Icon name='id card' />
             <List.Content>Amiibo present: <Icon name={this.state.cardPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
+          </List.Item>
+          <List.Item>
+            <List.Icon name='configure' />
+            <List.Content>App Setting: {this.state.appSetting}</List.Content>
           </List.Item>
           {this.state.amiiboImageUrl && (
             <List.Item>

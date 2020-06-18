@@ -89,20 +89,30 @@ class Amiibo extends NTAG215 {
    return await amiitool.encrypt(plaintext);
   }
 
+  emitWriteProgress(message) {
+    this.emit('write-progress', message);
+  }
+
+  onWriteProgress(cb) {
+    this.on('write-progress', cb);
+  }
+
   async write(amiiboData) {
-    console.log('validating tag is blank');
+    this.emitWriteProgress('validating tag is blank');
     await this.validateBlankTag();
-    console.log('tag is blank');
+    this.emitWriteProgress('patching UID');
     const patchedAmiiboData = await this.patchUID(amiiboData);
+    this.emitWriteProgress('writing user memory');
     await this.writeUserMemory(patchedAmiiboData);
-    console.log('wrote user memory');
+    this.emitWriteProgress('generating NTAG215 password');
     const password = await this.password();
+    this.emitWriteProgress('writing PACK');
     await this.writePACK(Buffer.from([0x80, 0x80]));
-    console.log('wrote PACK');
+    this.emitWriteProgress('writing password');
     await this.writePassword(password);
-    console.log('wrote password');
+    this.emitWriteProgress('locking amiibo');
     await this.writeLockInfo();
-    console.log('wrote lock info');
+    this.emitWriteProgress('complete');
   }
 
 }
