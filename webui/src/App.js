@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import {Container, Header, List, Icon, Image} from 'semantic-ui-react';
+import ReaderView from './ReaderView';
+import WriterView from './WriterView';
 
 const socket = io();
 
@@ -11,6 +13,7 @@ class App extends Component {
     readerPresent: false,
     cardPresent: false,
     appSetting: null,
+    writeLog: [],
   };
 
   async fetchSystemState() {
@@ -45,6 +48,11 @@ class App extends Component {
           this.setState({amiiboImageUrl: null, amiiboCharacterName: null});
         }
       })
+      .on('write-progress', message => {
+        var writeLog = this.state.writeLog.slice();
+        writeLog.push(message)
+        this.setState({writeLog});
+      })
       .on('amiibo', state => {
         this.setState({
           amiiboImageUrl: state ? state.imageUrl : null,
@@ -71,12 +79,17 @@ class App extends Component {
             <List.Icon name='configure' />
             <List.Content>App Setting: {this.state.appSetting}</List.Content>
           </List.Item>
-          {this.state.amiiboImageUrl && (
-            <List.Item>
-              <Header>{this.state.amiiboCharacterName}</Header>
-              <Image src={this.state.amiiboImageUrl} />
-            </List.Item>
-          )}
+          <List.Item>
+            {this.state.appSetting === 'read' && (
+              <ReaderView
+                characterName={this.state.amiiboCharacterName}
+                imageUrl={this.state.amiiboImageUrl}
+              />
+            )}
+            {this.state.appSetting === 'write' && (
+              <WriterView log={this.state.writeLog} />
+            )}
+          </List.Item>
         </List>
       </Container>
     );

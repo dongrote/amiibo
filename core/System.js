@@ -93,6 +93,7 @@ class System extends EventEmitter {
   async setPurpose(newPurpose) {
     if (_.includes(availablePurposes, newPurpose)) {
       this.purpose = newPurpose;
+      this.emit('purpose', newPurpose);
       return await Promise.resolve();
     }
     return await Promise.reject(new Error(`invalid purpose: '${newPurpose}'`));
