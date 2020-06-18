@@ -1,7 +1,4 @@
 'use strict';
-
-const { colorReset } = require('debug-logger');
-
 const _ = require('lodash'),
   env = require('../env'),
   {NFC} = require('nfc-pcsc'),
@@ -34,10 +31,10 @@ class System extends EventEmitter {
   setReader(reader) {
     this.reader = reader;
     this.reader
-      .on('error', this.onReaderError)
-      .on('end', this.onReaderEnd)
-      .on('card', this.onCardPresented)
-      .on('card.off', this.onCardRemoved);
+      .on('error', err => this.onReaderError(err))
+      .on('end', () => this.onReaderEnd())
+      .on('card', card => this.onCardPresented(card))
+      .on('card.off', () => this.onCardRemoved());
     this.emit('reader', {connected: true});
   }
 
