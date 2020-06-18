@@ -14,7 +14,7 @@ class System extends EventEmitter {
     this.writeConfiguration = {};
     this.timeouts = {write: null};
     this.purpose = 'read';
-    this.reader = null;
+    this.readers = {};
     this.card = null;
     this.nfc = new NFC();
     this.nfc.on('reader', reader => this.onReader(reader));
@@ -30,42 +30,39 @@ class System extends EventEmitter {
   }
 
   onReader(reader) {
-    this.reader = reader;
-    this.reader
-      .on('error', err => this.onReaderError(err))
-      .on('end', () => this.onReaderEnd())
-      .on('card', card => this.onCardPresented(card))
-      .on('card.off', () => this.onCardRemoved());
+    this.readers[reader.name] = reader;
+    reader
+      .on('error', err => this.onReaderError(reader.name, err))
+      .on('end', () => this.onReaderEnd(reader.name))
+      .on('card', card => this.onCardPresented(reader.name, card))
+      .on('card.off', () => this.onCardRemoved(reader.name));
     this.emit('reader', {connected: true});
   }
 
-  onReaderEnd() {
-    this.reader = null;
+  onReaderEnd(readerName) {
+    delete this.readers[readerName];
     this.card = null;
     this.amiibo = null;
     this.clearTimeouts();
     this.emit('reader', {connected: false});
   }
 
-  onReaderError(err) {
-    log.error('reader error', err);
+  onReaderError(readerName, err) {
+    log.error(`${readerName} error`, err);
   }
 
-  async onCardPresented(card) {
+  async onCardPresented(readerName, card) {
     this.card = card;
-    log.debug('card', card);
-    log.debug('this.reader', this.reader);
-    log.debug('reader.card', this.reader.card);
     const purpose = await this.getPurpose();
     if (purpose === 'read') {
-      await this.readAmiibo();
+      await this.readAmiibo(this.readers[readerName]);
     }
     if (purpose === 'write') {
-      await this.writeAmiibo();
+      await this.writeAmiibo(this.readers[readerName]);
     }
   }
 
-  onCardRemoved() {
+  onCardRemoved(readerName) {
     this.card = null;
     this.amiibo = null;
     this.clearTimeouts();
@@ -84,8 +81,8 @@ class System extends EventEmitter {
     return await Promise.resolve(this.purpose);
   }
 
-  async readAmiibo() {
-    this.amiibo = new Amiibo(this.reader);
+  async readAmiibo(reader) {
+    this.amiibo = new Amiibo(reader);
     try {
       const amiiboId = await this.amiibo.id();
       const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
@@ -96,8 +93,8 @@ class System extends EventEmitter {
     }
   }
 
-  async doWriteAmiibo() {
-    this.amiibo = new Amiibo(this.reader);
+  async doWriteAmiibo(reader) {
+    this.amiibo = new Amiibo(reader);
     this.amiibo.onWriteProgress(message => this.emit('write-progress', message));
     try {
       await this.amiibo.write(amiiboWriteData);
@@ -107,11 +104,11 @@ class System extends EventEmitter {
     }
   }
 
-  writeAmiibo() {
+  writeAmiibo(reader) {
     return new Promise((resolve, reject) => {
       this.emit('write-progress', 'waiting');
       this.timeouts.write = setTimeout(() => {
-        this.doWriteAmiibo()
+        this.doWriteAmiibo(reader)
           .then(() => resolve())
           .catch(reject);
       }, env.amiiboWriteGraceTimeout());
