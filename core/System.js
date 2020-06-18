@@ -12,10 +12,10 @@ class System extends EventEmitter {
   constructor() {
     super();
     this.writeConfiguration = {};
+    this.timeouts = {write: null};
     this.purpose = 'read';
     this.reader = null;
     this.nfc = new NFC();
-    this.timeouts = {write: null};
     this.nfc.on('reader', reader => this.setReader(reader));
   }
 
@@ -47,11 +47,13 @@ class System extends EventEmitter {
   }
 
   onReaderError(err) {
-    log.error(err);
+    log.error('reader error', err);
   }
 
   async onCardPresented(card) {
     this.card = card;
+    log.debug('card', card);
+    log.debug('reader.card', this.reader.card);
     const purpose = await this.getPurpose();
     if (purpose === 'read') {
       await this.readAmiibo();
@@ -73,8 +75,7 @@ class System extends EventEmitter {
       this.purpose = newPurpose;
       return await Promise.resolve();
     }
-    return await 
-    Promise.reject(new Error(`invalid purpose: '${newPurpose}'`));
+    return await Promise.reject(new Error(`invalid purpose: '${newPurpose}'`));
   }
 
   async getPurpose() {
@@ -88,6 +89,7 @@ class System extends EventEmitter {
       const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
       this.emit('amiibo', amiiboId, amiiboCharacter.name, this.amiibo);  
     } catch (err) {
+      this.amiibo = null;
       this.emit('error', err);
     }
   }
@@ -95,7 +97,12 @@ class System extends EventEmitter {
   async doWriteAmiibo() {
     this.amiibo = new Amiibo(this.reader);
     this.amiibo.onWriteProgress(message => this.emit('write-progress', message));
-    await this.amiibo.write(amiiboWriteData);
+    try {
+      await this.amiibo.write(amiiboWriteData);
+    } catch (err) {
+      this.amiibo = null;
+      throw err;
+    }
   }
 
   writeAmiibo() {
