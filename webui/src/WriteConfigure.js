@@ -20,7 +20,7 @@ class WriteConfigure extends Component {
   async selectAmiibo(amiibo) {
     console.log(amiibo);
     var res = await fetch(`/api/system/configure?amiibo=${encodeURIComponent(amiibo)}`);
-    this.setState({success: !!res.ok, error: !res.ok, selected: amiibo});
+    this.setState({success: !!res.ok, error: !res.ok, selected: res.ok ? amiibo : null});
     setTimeout(() => this.setState({success: false, error: false}), 5000);
   }
 
