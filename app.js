@@ -40,6 +40,7 @@ core.AmiiboDatabase
         log.info('amiibo', amiiboId);
         amiibo.imageUrl()
           .then(imageUrl => {
+            core.Websockets.publish('card', {present: true});
             core.Websockets.publish('amiibo', {
               imageUrl,
               character: {name: amiiboCharacterName},
@@ -49,6 +50,7 @@ core.AmiiboDatabase
       })
       .on('amiibo.removed', () => {
         log.info('amiibo removed');
+        core.Websockets.publish('card', {present: false});
         core.Websockets.publish('amiibo', null);
       });
   })
