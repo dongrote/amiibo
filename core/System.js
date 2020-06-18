@@ -20,6 +20,22 @@ class System extends EventEmitter {
     this.nfc.on('reader', reader => this.onReader(reader));
   }
 
+  async state() {
+    let amiiboImageUrl = null,
+      amiiboCharacterName = null;
+    if (this.amiibo) {
+      amiiboImageUrl = await this.amiibo.imageUrl();
+      const amiiboId = await this.amiibo.id();
+      amiiboCharacterName = await AmiiboDatabase.lookupById(amiiboId);
+    }
+    return {
+      amiiboImageUrl,
+      amiiboCharacterName,
+      reader: {connected: _.size(this.readers) > 0},
+      cardPresent: this.card !== null,
+    };
+  }
+
   clearTimeouts() {
     _.forEach(this.timeouts, (timeout, key) => {
       if (timeout) {
