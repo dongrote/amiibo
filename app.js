@@ -32,10 +32,8 @@ core.AmiiboDatabase
         log.info('reader', message);
         core.Websockets.publish('reader', message);
       })
-      .on('purpose', () => {
-        core.System.state()
-          .then(state => core.Websockets.publish('state', state))
-          .catch(log.error);
+      .on('purpose', purpose => {
+        core.Websockets.publish('purpose', purpose);
       })
       .on('write-progress', message => {
         log.info(`write progress: ${message}`);

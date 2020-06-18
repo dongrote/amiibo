@@ -42,6 +42,9 @@ class App extends Component {
       .on('reader', state => {
         this.setState({readerPresent: state.connected});
       })
+      .on('purpose', purpose => {
+        this.setState({appSetting: purpose});
+      })
       .on('card', state => {
         this.setState({cardPresent: state.present});
         if (!state.present) {
