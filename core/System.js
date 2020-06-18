@@ -120,6 +120,10 @@ class System extends EventEmitter {
   async doWriteAmiibo(reader) {
     this.amiibo = new Amiibo(reader);
     this.amiibo.onWriteProgress(message => this.emit('write-progress', message));
+    if (_.size(this.writeConfiguration.data) !== 540) {
+      this.emit('write-progress', 'writer not configured');
+      return;
+    }
     try {
       await this.amiibo.write(this.writeConfiguration.data);
     } catch (err) {

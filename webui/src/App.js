@@ -44,7 +44,7 @@ class App extends Component {
         this.setState({readerPresent: state.connected});
       })
       .on('purpose', purpose => {
-        this.setState({appSetting: purpose});
+        this.setState({appSetting: purpose, writeLog: []});
       })
       .on('card', state => {
         this.setState({cardPresent: state.present});
