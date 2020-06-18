@@ -15,8 +15,9 @@ class System extends EventEmitter {
     this.timeouts = {write: null};
     this.purpose = 'read';
     this.reader = null;
+    this.card = null;
     this.nfc = new NFC();
-    this.nfc.on('reader', reader => this.setReader(reader));
+    this.nfc.on('reader', reader => this.onReader(reader));
   }
 
   clearTimeouts() {
@@ -28,7 +29,7 @@ class System extends EventEmitter {
     });
   }
 
-  setReader(reader) {
+  onReader(reader) {
     this.reader = reader;
     this.reader
       .on('error', err => this.onReaderError(err))
@@ -53,6 +54,7 @@ class System extends EventEmitter {
   async onCardPresented(card) {
     this.card = card;
     log.debug('card', card);
+    log.debug('this.reader', this.reader);
     log.debug('reader.card', this.reader.card);
     const purpose = await this.getPurpose();
     if (purpose === 'read') {
