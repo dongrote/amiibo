@@ -5,7 +5,9 @@ const _ = require('lodash'),
   EventEmitter = require('events'),
   Amiibo = require('./Amiibo'),
   AmiiboDatabase = require('./AmiiboDatabase'),
+  AmiiboRepository = require('./AmiiboRepository'),
   log = require('debug-logger')('System');
+
 const availablePurposes = ['read', 'write'];
 
 class System extends EventEmitter {
@@ -146,6 +148,10 @@ class System extends EventEmitter {
       this.emit('error', err);
       log.error(err);
     });
+  }
+
+  async setAmiibo(amiiboFilename) {
+    this.writeConfiguration.data = await AmiiboRepository.read(amiiboFilename);
   }
 
 }

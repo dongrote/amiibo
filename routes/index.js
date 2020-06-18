@@ -9,4 +9,4 @@ exports.get('/health', (req, res) => res.sendStatus(200));
 exports.get('/amiibos', amiibos);
 exports.get('/system/state', systemState);
 exports.post('/system/purpose', setPurpose);
-exports.get('/system/config', setAmiibo);
+exports.get('/system/configure', setAmiibo);
