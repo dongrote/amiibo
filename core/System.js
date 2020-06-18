@@ -31,8 +31,10 @@ class System extends EventEmitter {
       amiiboCharacterName = amiiboCharacter.name;
     }
     return {
-      amiiboImageUrl,
-      amiiboCharacterName,
+      amiibo: {
+        imageUrl: amiiboImageUrl,
+        character: {name: amiiboCharacterName},
+      },
       reader: {connected: _.size(this.readers) > 0},
       card: {present: this.card !== null},
     };
