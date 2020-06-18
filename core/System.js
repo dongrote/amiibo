@@ -27,7 +27,8 @@ class System extends EventEmitter {
     if (this.amiibo) {
       amiiboImageUrl = await this.amiibo.imageUrl();
       const amiiboId = await this.amiibo.id();
-      amiiboCharacterName = await AmiiboDatabase.lookupById(amiiboId);
+      const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
+      amiiboCharacterName = amiiboCharacter.name;
     }
     return {
       amiiboImageUrl,
