@@ -83,9 +83,13 @@ class System extends EventEmitter {
 
   async readAmiibo() {
     this.amiibo = new Amiibo(this.reader);
-    const amiiboId = await this.amiibo.id();
-    const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
-    this.emit('amiibo', amiiboId, amiiboCharacter.name, this.amiibo);
+    try {
+      const amiiboId = await this.amiibo.id();
+      const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
+      this.emit('amiibo', amiiboId, amiiboCharacter.name, this.amiibo);  
+    } catch (err) {
+      this.emit('error', err);
+    }
   }
 
   async doWriteAmiibo() {
