@@ -37,6 +37,7 @@ class System extends EventEmitter {
       },
       reader: {connected: _.size(this.readers) > 0},
       card: {present: this.card !== null},
+      purpose: this.purpose,
     };
   }
 
