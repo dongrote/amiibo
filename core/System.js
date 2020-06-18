@@ -16,6 +16,7 @@ class System extends EventEmitter {
     this.purpose = 'read';
     this.readers = {};
     this.card = null;
+    this.amiibo = null;
     this.nfc = new NFC();
     this.nfc.on('reader', reader => this.onReader(reader));
   }
@@ -32,7 +33,7 @@ class System extends EventEmitter {
       amiiboImageUrl,
       amiiboCharacterName,
       reader: {connected: _.size(this.readers) > 0},
-      cardPresent: this.card !== null,
+      card: {present: this.card !== null},
     };
   }
 
