@@ -44,7 +44,14 @@ class App extends Component {
         this.setState({readerPresent: state.connected});
       })
       .on('purpose', purpose => {
-        this.setState({appSetting: purpose, writeLog: []});
+        const newState = {appSetting: purpose, writeLog: []};
+        if (purpose === 'read' && !this.state.cardPresent) {
+          // there isn't actually a card and we're switching back to read mode
+          // clear out any "present" amiibo data
+          newState.amiiboImageUrl = null;
+          newState.amiiboCharacterName = null;
+        }
+        this.setState(newState);
       })
       .on('card', state => {
         this.setState({cardPresent: state.present});

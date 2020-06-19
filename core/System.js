@@ -98,6 +98,10 @@ class System extends EventEmitter {
   async setPurpose(newPurpose) {
     if (_.includes(availablePurposes, newPurpose)) {
       this.purpose = newPurpose;
+      if (newPurpose === 'read' && this.card === null) {
+        // there isn't actually a card present, so set amiibo back to null
+        this.amiibo = null;
+      }
       this.emit('purpose', newPurpose);
       return await Promise.resolve();
     }
