@@ -3,15 +3,20 @@ const _ = require('lodash'),
   env = require('../env'),
   {NFC} = require('nfc-pcsc'),
   EventEmitter = require('events'),
+  BufferTagReader = require('./BufferTagReader'),
   Amiibo = require('./Amiibo'),
   AmiiboDatabase = require('./AmiiboDatabase'),
+  AmiiboRepository = require('./AmiiboRepository'),
   log = require('debug-logger')('System');
+
 const availablePurposes = ['read', 'write'];
 
 class System extends EventEmitter {
   constructor() {
     super();
-    this.writeConfiguration = {};
+    this.writeConfiguration = {
+      data: Buffer.allocUnsafe(0),
+    };
     this.timeouts = {write: null};
     this.purpose = 'read';
     this.readers = {};
@@ -93,6 +98,11 @@ class System extends EventEmitter {
   async setPurpose(newPurpose) {
     if (_.includes(availablePurposes, newPurpose)) {
       this.purpose = newPurpose;
+      if (newPurpose === 'read' && this.card === null) {
+        // there isn't actually a card present, so set amiibo back to null
+        this.amiibo = null;
+      }
+      this.emit('purpose', newPurpose);
       return await Promise.resolve();
     }
     return await Promise.reject(new Error(`invalid purpose: '${newPurpose}'`));
@@ -117,10 +127,15 @@ class System extends EventEmitter {
   async doWriteAmiibo(reader) {
     this.amiibo = new Amiibo(reader);
     this.amiibo.onWriteProgress(message => this.emit('write-progress', message));
+    if (_.size(this.writeConfiguration.data) !== 540) {
+      this.emit('write-progress', 'writer not configured');
+      return;
+    }
     try {
-      await this.amiibo.write(amiiboWriteData);
+      await this.amiibo.write(this.writeConfiguration.data);
     } catch (err) {
       this.amiibo = null;
+      this.emit('write-progress', `error: ${err.message}`);
       throw err;
     }
   }
@@ -138,6 +153,15 @@ class System extends EventEmitter {
       this.emit('error', err);
       log.error(err);
     });
+  }
+
+  async setAmiibo(amiiboFilename) {
+    this.writeConfiguration.data = await AmiiboRepository.read(amiiboFilename);
+    const amiiboTagBufferReader = new BufferTagReader(this.writeConfiguration.data);
+    this.amiibo = new Amiibo(amiiboTagBufferReader);
+    const amiiboId = await this.amiibo.id();
+    const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
+    this.emit('amiibo', amiiboId, amiiboCharacter.name, this.amiibo);
   }
 
 }

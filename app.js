@@ -32,6 +32,9 @@ core.AmiiboDatabase
         log.info('reader', message);
         core.Websockets.publish('reader', message);
       })
+      .on('purpose', purpose => {
+        core.Websockets.publish('purpose', purpose);
+      })
       .on('write-progress', message => {
         log.info(`write progress: ${message}`);
         core.Websockets.publish('write-progress', message);
@@ -52,6 +55,7 @@ core.AmiiboDatabase
         log.info('amiibo removed');
         core.Websockets.publish('card', {present: false});
         core.Websockets.publish('amiibo', null);
+        core.Websockets.publish('write-progress', 'card removed');
       });
   })
   .catch(log.error);
