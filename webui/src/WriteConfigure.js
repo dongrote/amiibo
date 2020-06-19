@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Form, Dropdown, Message } from 'semantic-ui-react';
+import { Button, Form, Dropdown, Message, Icon } from 'semantic-ui-react';
 
 class WriteConfigure extends Component {
   state = {
+    uploadFile: null,
     selected: null,
     availableAmiibos: [],
     success: false,
@@ -18,10 +19,27 @@ class WriteConfigure extends Component {
   }
 
   async selectAmiibo(amiibo) {
-    console.log(amiibo);
     var res = await fetch(`/api/system/configure?amiibo=${encodeURIComponent(amiibo)}`);
     this.setState({success: !!res.ok, error: !res.ok, selected: res.ok ? amiibo : null});
     setTimeout(() => this.setState({success: false, error: false}), 5000);
+  }
+
+  onChooseUploadFile(file) {
+    this.setState({uploadFile: file});
+  }
+
+  async uploadAmiibo() {
+    console.log(this.state.uploadFile);
+    const data = new FormData();
+    data.append('file', this.state.uploadFile);
+    var res = await fetch('/api/amiibos', {
+      method: 'POST',
+      body: data,
+    });
+    if (res.ok) {
+      this.setState({uploadFile: null});
+      await this.populateDropdown();
+    }
   }
 
   async componentDidMount() {
@@ -42,6 +60,20 @@ class WriteConfigure extends Component {
           />
           <Message success content='Amiibo selected successfully' />
           <Message error content='Error selecting Amiibo' />
+        </Form.Field>
+        <Form.Field>
+          <label>Upload New Amiibo</label>
+          <input
+            type='file'
+            onChange={e => this.onChooseUploadFile(e.target.files[0])}
+          />
+          <Button
+            disabled={this.state.uploadFile === null}
+            onClick={() => this.uploadAmiibo()}
+          >
+            <Icon name='upload' />
+            Upload
+          </Button>
         </Form.Field>
       </Form>
     );
