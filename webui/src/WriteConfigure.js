@@ -37,11 +37,8 @@ class WriteConfigure extends Component {
       body: data,
     });
     if (res.ok) {
-      console.log('upload success');
       this.setState({uploadFile: null});
       await this.populateDropdown();
-    } else {
-      console.log('upload error');
     }
   }
 
