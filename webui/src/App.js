@@ -62,6 +62,9 @@ class App extends Component {
         this.setState({writeLog});
       })
       .on('amiibo', state => {
+        if (this.state.appSetting === 'write' && state === null) {
+          return;
+        }
         this.setState({
           [`${this.state.appSetting}AmiiboImageUrl`]: state ? state.imageUrl : null,
           [`${this.state.appSetting}AmiiboCharacterName`]: state ? state.character.name : null,
