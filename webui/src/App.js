@@ -9,10 +9,11 @@ const socket = io();
 
 class App extends Component {
   state = {
-    amiiboImageUrl: null,
-    amiiboCharacterName: null,
+    readAmiiboImageUrl: null,
+    readAmiiboCharacterName: null,
+    writeAmiiboImageUrl: null,
+    writeAmiiboCharacterName: null,
     readerPresent: false,
-    cardPresent: false,
     appSetting: null,
     writeLog: [],
   };
@@ -30,7 +31,6 @@ class App extends Component {
     if (state) {
       this.setState({
         readerPresent: state.reader.connected,
-        cardPresent: state.card.present,
         amiiboImageUrl: state.amiibo ? state.amiibo.imageUrl : null,
         amiiboCharacterName: state.amiibo ? state.amiibo.character.name : null,
         appSetting: state.purpose,
@@ -45,18 +45,15 @@ class App extends Component {
       })
       .on('purpose', purpose => {
         const newState = {appSetting: purpose, writeLog: []};
-        if (purpose === 'read' && !this.state.cardPresent) {
-          // there isn't actually a card and we're switching back to read mode
-          // clear out any "present" amiibo data
-          newState.amiiboImageUrl = null;
-          newState.amiiboCharacterName = null;
+        if (purpose === 'write') {
+          newState.writeAmiiboImageUrl = null;
+          newState.writeAmiiboCharacterName = null;
         }
         this.setState(newState);
       })
       .on('card', state => {
-        this.setState({cardPresent: state.present});
         if (!state.present) {
-          this.setState({amiiboImageUrl: null, amiiboCharacterName: null});
+          this.setState({readAmiiboImageUrl: null, readAmiiboCharacterName: null});
         }
       })
       .on('write-progress', message => {
@@ -66,8 +63,8 @@ class App extends Component {
       })
       .on('amiibo', state => {
         this.setState({
-          amiiboImageUrl: state ? state.imageUrl : null,
-          amiiboCharacterName: state ? state.character.name : null,
+          [`${this.state.appSetting}AmiiboImageUrl`]: state ? state.imageUrl : null,
+          [`${this.state.appSetting}AmiiboCharacterName`]: state ? state.character.name : null,
         });
       });
     await this.updateSystemState();
@@ -83,10 +80,6 @@ class App extends Component {
             <List.Content>Reader present: <Icon name={this.state.readerPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name='id card' />
-            <List.Content>Amiibo present: <Icon name={this.state.cardPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
-          </List.Item>
-          <List.Item>
             <List.Content>
               <ReadWriteToggle setting={this.state.appSetting} />
             </List.Content>
@@ -94,15 +87,15 @@ class App extends Component {
           <List.Item>
             {this.state.appSetting === 'read' && (
               <ReaderView
-                characterName={this.state.amiiboCharacterName}
-                imageUrl={this.state.amiiboImageUrl}
+                characterName={this.state.readAmiiboCharacterName}
+                imageUrl={this.state.readAmiiboImageUrl}
               />
             )}
             {this.state.appSetting === 'write' && (
               <WriterView
                 log={this.state.writeLog}
-                characterName={this.state.amiiboCharacterName}
-                imageUrl={this.state.amiiboImageUrl}
+                characterName={this.state.writeAmiiboCharacterName}
+                imageUrl={this.state.writeAmiiboImageUrl}
               />
             )}
           </List.Item>
