@@ -92,7 +92,11 @@ class App extends Component {
               />
             )}
             {this.state.appSetting === 'write' && (
-              <WriterView log={this.state.writeLog} />
+              <WriterView
+                log={this.state.writeLog}
+                characterName={this.state.amiiboCharacterName}
+                imageUrl={this.state.amiiboImageUrl}
+              />
             )}
           </List.Item>
         </List>

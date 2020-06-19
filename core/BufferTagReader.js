@@ -10,6 +10,7 @@ class BufferTagReader extends EventEmitter {
   buffer = Buffer.alloc(540);
 
   constructor(data) {
+    super();
     this.PAGE_SIZE = 4;
     this.TOTAL_LENGTH = 540;
     if (data.length !== 540) {
