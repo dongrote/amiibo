@@ -43,6 +43,10 @@ class WriteConfigure extends Component {
           <Message success content='Amiibo selected successfully' />
           <Message error content='Error selecting Amiibo' />
         </Form.Field>
+        <Form.Field>
+          <label>Upload New Amiibo</label>
+          <input type='file' />
+        </Form.Field>
       </Form>
     );
   }

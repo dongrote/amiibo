@@ -1,12 +1,20 @@
 'use strict';
 exports = module.exports = require('express').Router();
-const systemState = require('./systemState'),
+const multer = require('multer'),
+  systemState = require('./systemState'),
   amiibos = require('./amiibos'),
   setAmiibo = require('./setAmiibo'),
+  importAmiibo = require('./importAmiibo'),
   setPurpose = require('./setPurpose');
+
+const amiiboUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {fileSize: 1000},
+});
 
 exports.get('/health', (req, res) => res.sendStatus(200));
 exports.get('/amiibos', amiibos);
+exports.post('/amiibos', amiiboUpload.single('file'), importAmiibo);
 exports.get('/system/state', systemState);
 exports.post('/system/purpose', setPurpose);
 exports.get('/system/configure', setAmiibo);

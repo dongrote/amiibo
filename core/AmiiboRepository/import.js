@@ -1,14 +1,18 @@
 'use strict';
-const fs = require('fs'),
-  Amiibo = require('../Amiibo'),
-  filepath = require('./filepath'),
-  BufferTagReader = require('../BufferTagReader');
+const _ = require('lodash'),
+  env = require('../../env'),
+  path = require('path'),
+  fs = require('fs');
 
-exports = module.exports = amiiboData => {
-  const reader = new BufferTagReader(amiiboData);
-  const amiibo = new Amiibo(reader);
-  return amiibo.id()
-    .then(amiiboId => new Promise((resolve, reject) => {
-      fs.writeFile(filepath(amiiboId), amiiboData, err => err ? reject(err) : resolve());
-    }));
+exports = module.exports = (amiiboData, filename) => {
+  const amiiboFilePath = path.join(env.amiiboDirectory(), filename),
+    amiiboDataLength = _.size(amiiboData);
+  return amiiboDataLength === 540
+    ? new Promise((resolve, reject) => {
+        fs.access(amiiboFilePath, err => err ? resolve() : reject(new Error('already exists')));
+      })
+      .then(() => new Promise((resolve, reject) => {
+        fs.writeFile(amiiboFilePath, amiiboData, err => err ? reject(err) : resolve());
+      }))
+    : Promise.reject(new Error(`invalid Amiibo file size: ${amiiboDataLength}`));
 };
