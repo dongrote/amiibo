@@ -3,6 +3,7 @@ const _ = require('lodash'),
   env = require('../env'),
   {NFC} = require('nfc-pcsc'),
   EventEmitter = require('events'),
+  BufferTagReader = require('./BufferTagReader'),
   Amiibo = require('./Amiibo'),
   AmiiboDatabase = require('./AmiiboDatabase'),
   AmiiboRepository = require('./AmiiboRepository'),
@@ -152,6 +153,11 @@ class System extends EventEmitter {
 
   async setAmiibo(amiiboFilename) {
     this.writeConfiguration.data = await AmiiboRepository.read(amiiboFilename);
+    const amiiboTagBufferReader = new BufferTagReader(this.writeConfiguration.data);
+    this.amiibo = new Amiibo(amiiboTagBufferReader);
+    const amiiboId = await this.amiibo.id();
+    const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
+    this.emit('amiibo', amiiboId, amiiboCharacter.name, this.amiibo);
   }
 
 }
