@@ -26,6 +26,14 @@ class System extends EventEmitter {
     this.nfc.on('reader', reader => this.onReader(reader));
   }
 
+  readerIsConnected() {
+    return _.size(this.readers) > 0;
+  }
+
+  cardIsPresent() {
+    return _.size(this.cards) > 0;
+  }
+
   async state() {
     let amiiboImageUrl = null,
       amiiboCharacterName = null;
@@ -51,10 +59,10 @@ class System extends EventEmitter {
         imageUrl: amiiboImageUrl,
         character: {name: amiiboCharacterName},
       },
-      reader: {connected: _.size(this.readers) > 0},
+      reader: {connected: this.readerIsConnected()},
       card: {
         blank,
-        present: _.size(this.cards) > 0,
+        present: this.cardIsPresent(),
       },
       purpose: this.purpose,
     };
@@ -81,7 +89,7 @@ class System extends EventEmitter {
 
   onReaderEnd(readerName) {
     delete this.readers[readerName];
-    this.card = null;
+    this.cards = {};
     this.amiibo = null;
     this.clearTimeouts();
     this.emit('reader', {connected: false});
@@ -114,7 +122,7 @@ class System extends EventEmitter {
   async setPurpose(newPurpose) {
     if (_.includes(availablePurposes, newPurpose)) {
       this.purpose = newPurpose;
-      if (newPurpose === 'read' && this.card === null) {
+      if (newPurpose === 'read' && _.size(this.cards) === 0) {
         // there isn't actually a card present, so set amiibo back to null
         this.amiibo = null;
       }
@@ -163,10 +171,13 @@ class System extends EventEmitter {
   }
 
   async writeAmiibo(amiiboData) {
-    const reader = this.findPopulatedReader();
-    if (reader === null) {
+    if (!this.readerIsConnected()) {
+      throw new Error('no reader connected');
+    }
+    if (!this.cardIsPresent()) {
       throw new Error('no tag present');
     }
+    const reader = this.findPopulatedReader();
     await this.doWriteAmiibo(reader, amiiboData)
   }
 

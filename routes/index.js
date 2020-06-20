@@ -6,7 +6,6 @@ const multer = require('multer'),
   setAmiibo = require('./setAmiibo'),
   importAmiibo = require('./importAmiibo'),
   writeAmiibo = require('./writeAmiibo'),
-  cardState = require('./cardState'),
   setPurpose = require('./setPurpose');
 
 const amiiboUpload = multer({
