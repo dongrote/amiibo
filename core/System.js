@@ -161,7 +161,7 @@ class System extends EventEmitter {
     this.amiibo = new Amiibo(amiiboTagBufferReader);
     const amiiboId = await this.amiibo.id();
     const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
-    this.emit('amiibo', amiiboId, _.get(amiiboCharacter, 'name', '???'), this.amiibo);
+    this.emit('amiibo', amiiboId, _.get(amiiboCharacter, 'name', '(character not found in database)'), this.amiibo);
   }
 
 }
