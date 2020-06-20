@@ -42,6 +42,7 @@ class WriteConfigure extends Component {
               <label>Amiibo</label>
               <Dropdown
                 placeholder='Select an Amiibo'
+                search
                 selection
                 value={this.state.selected}
                 options={this.state.availableAmiibos.map((v, k) => ({key: k, value: v, text: v.file, image: {src: v.imageUrl}}))}
