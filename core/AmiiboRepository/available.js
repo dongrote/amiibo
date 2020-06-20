@@ -1,5 +1,6 @@
 'use strict';
 const env = require('../../env'),
+  path = require('path'),
   fs = require('fs'),
   imageUrl = require('./imageUrl');
 
