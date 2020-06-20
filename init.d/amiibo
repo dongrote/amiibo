@@ -40,11 +40,6 @@ stop_amiibo() {
   echo "Not implemented"
 }
 
-reload_amiibo() {
-	# Function that sends a SIGHUP to the daemon/service
-}
-
-
 upgrade_amiibo() {
 	# Online upgrade nginx executable
 	# http://nginx.org/en/docs/control.html
@@ -54,7 +49,7 @@ upgrade_amiibo() {
 	#   1 if nginx is not running
 	#   2 if the pid files were not created on time
 	#   3 if the old master could not be killed
-  cd /home/ubuntu/git/nfc && git pull ; cd -
+  cd /home/ubuntu/git/nfc && su ubuntu -- git pull ; cd -
 }
 
 case "$1" in
