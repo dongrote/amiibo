@@ -26,6 +26,9 @@ start_amiibo() {
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
+
+	# This assumes you have a startup script in your PATH that looks like this:
+	# cd /home/ubuntu/git/nfc && DEBUG=*:error,*:info nohup npm start &
   su -l ubuntu -- start-amiibo
 }
 
