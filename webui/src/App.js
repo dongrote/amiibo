@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import {Container, Header, List, Icon, Image} from 'semantic-ui-react';
+import {Container, Header, Icon, Grid} from 'semantic-ui-react';
 import ReaderView from './ReaderView';
 import WriterView from './WriterView';
 import ReadWriteToggle from './ReadWriteToggle';
@@ -77,18 +77,20 @@ class App extends Component {
     return (
       <Container text>
         <Header>Amiibo App</Header>
-        <List divided>
-          <List.Item>
-            <List.Icon name='feed' />
-            <List.Content>Reader present: <Icon name={this.state.readerPresent ? 'check circle outline' : 'window close outline'} /></List.Content>
-          </List.Item>
-          <List.Item>
-            <List.Content>
+        <Grid>
+          <Grid.Row columns={2}>
+            <Grid.Column>
               <ReadWriteToggle setting={this.state.appSetting} />
-            </List.Content>
-          </List.Item>
-          <List.Item>
-            {this.state.appSetting === 'read' && (
+            </Grid.Column>
+            <Grid.Column textAlign='right'>
+              <div>
+                <Icon name='feed' />
+                Reader present: <Icon name={this.state.readerPresent ? 'check circle outline' : 'window close outline'} />
+              </div>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row columns={1}>
+          {this.state.appSetting === 'read' && (
               <ReaderView
                 characterName={this.state.readAmiiboCharacterName}
                 imageUrl={this.state.readAmiiboImageUrl}
@@ -101,8 +103,8 @@ class App extends Component {
                 imageUrl={this.state.writeAmiiboImageUrl}
               />
             )}
-          </List.Item>
-        </List>
+          </Grid.Row>
+        </Grid>
       </Container>
     );
   }
