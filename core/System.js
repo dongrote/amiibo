@@ -36,7 +36,8 @@ class System extends EventEmitter {
 
   async state() {
     let amiiboImageUrl = null,
-      amiiboCharacterName = null;
+      amiiboCharacterName = null,
+      blank = true;
     const reader = _.get(this.readers, _.first(_.keys(this.cards)));
     if (this.amiibo) {
       amiiboImageUrl = await this.amiibo.imageUrl();
@@ -46,10 +47,8 @@ class System extends EventEmitter {
     }
     if (reader) {
       const amiibo = new Amiibo(reader);
-      let blank;
       try {
         await amiibo.validateBlankTag();
-        blank = true;
       } catch (e) {
         blank = false;
       }
