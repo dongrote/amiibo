@@ -19,7 +19,7 @@ class WriteConfigure extends Component {
   }
 
   async selectAmiibo(amiibo) {
-    var res = await fetch(`/api/system/configure?amiibo=${encodeURIComponent(amiibo)}`);
+    var res = await fetch(`/api/system/configure?amiibo=${encodeURIComponent(amiibo.file)}`);
     this.setState({success: !!res.ok, error: !res.ok, selected: res.ok ? amiibo : null});
     setTimeout(() => this.setState({success: false, error: false}), 5000);
   }
@@ -44,7 +44,7 @@ class WriteConfigure extends Component {
                 placeholder='Select an Amiibo'
                 selection
                 value={this.state.selected}
-                options={this.state.availableAmiibos.map((v, k) => ({key: k, value: v, text: v}))}
+                options={this.state.availableAmiibos.map((v, k) => ({key: k, value: v, text: v.file, image: {src: v.imageUrl}}))}
                 onChange={(e, data) => this.selectAmiibo(data.value)}
               />
               <Message success content='Amiibo selected successfully' />
