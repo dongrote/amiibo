@@ -39,11 +39,12 @@ core.AmiiboDatabase
         log.info(`write progress: ${message}`);
         core.Websockets.publish('write-progress', message);
       })
+      .on('card', ({present, blank}) => core.Websockets.publish('card', {present, blank}))
       .on('amiibo', (amiiboId, amiiboCharacterName, amiibo) => {
         log.info('amiibo', amiiboId);
         amiibo.imageUrl()
           .then(imageUrl => {
-            core.Websockets.publish('card', {present: true});
+            core.Websockets.publish('card', {present: true, blank: false});
             core.Websockets.publish('amiibo', {
               imageUrl,
               character: {name: amiiboCharacterName},

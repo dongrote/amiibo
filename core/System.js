@@ -104,11 +104,19 @@ class System extends EventEmitter {
     if (purpose === 'read') {
       await this.readAmiibo(this.readers[readerName]);
     }
-    /*
     if (purpose === 'write') {
-      await this.writeAmiibo(this.readers[readerName]);
+      await this.verifyBlankTag(this.readers[readerName]);
     }
-    */
+  }
+
+  async verifyBlankTag(reader) {
+    const amiibo = new Amiibo(reader);
+    try {
+      await amiibo.validateBlankTag();
+      this.emit('card', {present: true, blank: true});
+    } catch (e) {
+      this.emit('card', {present: true, blank: false});
+    }
   }
 
   onCardRemoved(readerName) {
