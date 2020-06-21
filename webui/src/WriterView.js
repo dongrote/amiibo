@@ -35,6 +35,8 @@ class WriterView extends Component {
         <Button
           fluid
           disabled={!this.props.blankCard}
+          positive={this.props.blankCard}
+          negative={this.props.presentCard && !this.props.blankCard}
           loading={this.state.writing}
           onClick={() => this.writeAmiibo()}
         >
