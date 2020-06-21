@@ -28,20 +28,11 @@ core.AmiiboDatabase
   .then(() => {
     core.System
       .on('error', log.error)
-      .on('reader', message => {
-        log.info('reader', message);
-        core.Websockets.publish('reader', message);
-      })
-      .on('purpose', purpose => {
-        core.Websockets.publish('purpose', purpose);
-      })
-      .on('write-progress', message => {
-        log.info(`write progress: ${message}`);
-        core.Websockets.publish('write-progress', message);
-      })
+      .on('reader', message => core.Websockets.publish('reader', message))
+      .on('purpose', purpose => core.Websockets.publish('purpose', purpose))
+      .on('write-progress', message => core.Websockets.publish('write-progress', message))
       .on('card', ({present, blank}) => core.Websockets.publish('card', {present, blank}))
       .on('amiibo', (amiiboId, amiiboCharacterName, amiibo) => {
-        log.info('amiibo', amiiboId);
         amiibo.imageUrl()
           .then(imageUrl => {
             core.Websockets.publish('card', {present: true, blank: false});
@@ -53,7 +44,6 @@ core.AmiiboDatabase
           .catch(log.error);
       })
       .on('amiibo.removed', () => {
-        log.info('amiibo removed');
         core.Websockets.publish('card', {present: false});
         core.Websockets.publish('amiibo', null);
         core.Websockets.publish('write-progress', 'card removed');

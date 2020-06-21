@@ -1,6 +1,7 @@
 'use strict';
 const amiitool = require('./Amiitool'),
   NTAG215 = require('./NTAG215');
+const { times } = require('lodash');
 
 class Amiibo extends NTAG215 {
   HEAD_BLOCK_NUMBER = 0x15;
@@ -44,13 +45,21 @@ class Amiibo extends NTAG215 {
     return `https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_${head.toString(16).padStart(8, '0')}-${tail.toString(16).padStart(8, '0')}.png`;
   }
 
-  async validateBlankTag() {
-    console.log('validating tag is blank');
+  async hasAmiiboLock() {
     const lockBytes = await this.lockBytes();
-    if (lockBytes[0] === 0x0f && lockBytes[1] === 0xe0) {
-      throw new Error('tag is already an Amiibo');
+    return lockBytes[0] === 0x0f && lockBytes[1] === 0xe0;
+  }
+
+  async blankTag() {
+    const isLocked = await this.hasAmiiboLock();
+    return !isLocked;
+  }
+
+  async validateBlankTag() {
+    if (await this.blankTag()) {
+      return;
     }
-    console.log('tag is blank');
+    throw new Error('tag is already an Amiibo');
   }
 
   async writeUserMemory(amiiboData) {
