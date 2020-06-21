@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Form, Grid, Icon } from 'semantic-ui-react';
+import AmiiboReport from './AmiiboReport';
 
 class UploadAmiiboForm extends Component {
   state = {
@@ -10,7 +11,23 @@ class UploadAmiiboForm extends Component {
     buttonPositive: false,
     buttonNegative: false,
     buttonLoading: false,
+    showReport: false,
   };
+  reports = {};
+  file = null;
+
+  async onChooseFile(file) {
+    this.file = file;
+    const data = new FormData();
+    data.append('file', file);
+    var res = await fetch(`/api/amiibo/report`, {method: 'POST', body: data});
+    if (res.ok) {
+      var json = await res.json();
+      this.reports = json;
+      this.setState({showReport: true});
+    }
+    this.enableUploadButton();
+  }
 
   resetUploadButton() {
     this.setState({
@@ -66,23 +83,20 @@ class UploadAmiiboForm extends Component {
     });
   }
 
-  onChooseFile(file) {
-    this.setState({file});
-    this.enableUploadButton();
-  }
-
   async onClickUpload() {
     this.waitingUploadButton();
     const data = new FormData();
-    data.append('file', this.state.file);
+    data.append('file', this.file);
     var res = await fetch('/api/amiibos', {method: 'POST', body: data});
     if (res.ok) {
       this.successUploadButton();
-      this.props.onSuccessfulUpload();
     } else {
       this.errorUploadButton();
     }
-    setTimeout(() => this.resetUploadButton(), 5000);
+    setTimeout(() => {
+      this.resetUploadButton();
+      if (res.ok) this.props.onSuccessfulUpload();
+    }, 3000);
   }
 
   render() {
@@ -114,6 +128,19 @@ class UploadAmiiboForm extends Component {
             </Button>
           </Grid.Column>
         </Grid.Row>
+        {this.state.showReport && (
+          <Grid.Row columns={1}>
+            <Grid.Column>
+              <AmiiboReport
+                idReport={this.reports.id}
+                nameReport={this.reports.name}
+                sizeReport={this.reports.size}
+                imageUrlReport={this.reports.imageUrl}
+                blankReport={this.reports.blank}
+              />
+            </Grid.Column>
+          </Grid.Row>
+        )}
       </Grid>
     );
   }

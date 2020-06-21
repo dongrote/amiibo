@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import {Container, Header, Icon, Grid} from 'semantic-ui-react';
+import {Container, Header, Icon, Grid, Button} from 'semantic-ui-react';
 import ReaderView from './ReaderView';
 import WriterView from './WriterView';
 import ReadWriteToggle from './ReadWriteToggle';
+import UploadAmiiboForm from './UploadAmiiboForm';
 
 const socket = io();
 
@@ -81,10 +82,7 @@ class App extends Component {
       <Container text>
         <Header>Amiibo App</Header>
         <Grid>
-          <Grid.Row columns={2}>
-            <Grid.Column>
-              <ReadWriteToggle setting={this.state.appSetting} />
-            </Grid.Column>
+          <Grid.Row columns={1}>
             <Grid.Column textAlign='right'>
               <div>
                 <Icon name='feed' />
@@ -92,7 +90,18 @@ class App extends Component {
               </div>
             </Grid.Column>
           </Grid.Row>
+          <Grid.Row columns={2}>
+            <Grid.Column>
+              <ReadWriteToggle setting={this.state.appSetting} />
+            </Grid.Column>
+            <Grid.Column textAlign='right'>
+              <Button onClick={() => this.setState({appSetting: 'upload'})}>Upload Amiibo</Button>
+            </Grid.Column>
+          </Grid.Row>
           <Grid.Row columns={1}>
+          {this.state.appSetting === 'upload' && (
+            <UploadAmiiboForm onSuccessfulUpload={() => console.log('amiibo upload success')} />
+          )}
           {this.state.appSetting === 'read' && (
               <ReaderView
                 characterName={this.state.readAmiiboCharacterName}
