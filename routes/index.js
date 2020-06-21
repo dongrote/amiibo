@@ -7,6 +7,7 @@ const multer = require('multer'),
   setAmiibo = require('./setAmiibo'),
   importAmiibo = require('./importAmiibo'),
   writeAmiibo = require('./writeAmiibo'),
+  amiiboReport = require('./amiiboReport'),
   setPurpose = require('./setPurpose');
 
 const amiiboUpload = multer({
@@ -16,6 +17,7 @@ const amiiboUpload = multer({
 
 exports.get('/health', (req, res) => res.sendStatus(200));
 exports.get('/amiibo', amiibo);
+exports.post('/amiibo/report', amiiboUpload.single('file'), amiiboReport);
 exports.get('/amiibos', amiibos);
 exports.post('/amiibos', amiiboUpload.single('file'), importAmiibo);
 exports.post('/amiibo', writeAmiibo);
