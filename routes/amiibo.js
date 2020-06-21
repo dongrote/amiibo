@@ -5,7 +5,7 @@ const _ = require('lodash'),
 
 exports = module.exports = (req, res, next) => {
   const filename = _.get(req.query, 'amiibo');
-  if (!amiibo) {
+  if (!filename) {
     return Promise.resolve(next(new HttpError(400, 'missing amiibo')));
   }
   return core.AmiiboRepository.read(filename)
