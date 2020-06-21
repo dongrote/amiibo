@@ -19,8 +19,16 @@ class WriteConfigure extends Component {
   }
 
   async selectAmiibo(amiibo) {
-    var res = await fetch(`/api/system/configure?amiibo=${encodeURIComponent(amiibo.file)}`);
-    this.setState({success: !!res.ok, error: !res.ok, selected: res.ok ? amiibo : null});
+    var res = await fetch(`/api/amiibo?amiibo=${encodeURIComponent(amiibo.file)}`);
+    if (res.ok) {
+      var json = await res.json();
+      this.props.onAmiiboSelect({
+        filename: amiibo.file,
+        name: json.name,
+        imageUrl: amiibo.imageUrl,
+      });
+      this.setState({success: !!res.ok, error: !res.ok, selected: res.ok ? amiibo : null});
+    }
     setTimeout(() => this.setState({success: false, error: false}), 5000);
   }
 

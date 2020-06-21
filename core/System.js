@@ -20,28 +20,49 @@ class System extends EventEmitter {
     this.timeouts = {write: null};
     this.purpose = 'read';
     this.readers = {};
-    this.card = null;
+    this.cards = {};
     this.amiibo = null;
     this.nfc = new NFC();
     this.nfc.on('reader', reader => this.onReader(reader));
   }
 
+  readerIsConnected() {
+    return _.size(this.readers) > 0;
+  }
+
+  cardIsPresent() {
+    return _.size(this.cards) > 0;
+  }
+
   async state() {
     let amiiboImageUrl = null,
-      amiiboCharacterName = null;
+      amiiboCharacterName = null,
+      blank = true;
+    const reader = _.get(this.readers, _.first(_.keys(this.cards)));
     if (this.amiibo) {
       amiiboImageUrl = await this.amiibo.imageUrl();
       const amiiboId = await this.amiibo.id();
       const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
       amiiboCharacterName = amiiboCharacter.name;
     }
+    if (reader) {
+      const amiibo = new Amiibo(reader);
+      try {
+        await amiibo.validateBlankTag();
+      } catch (e) {
+        blank = false;
+      }
+    }
     return {
       amiibo: {
         imageUrl: amiiboImageUrl,
         character: {name: amiiboCharacterName},
       },
-      reader: {connected: _.size(this.readers) > 0},
-      card: {present: this.card !== null},
+      reader: {connected: this.readerIsConnected()},
+      card: {
+        blank,
+        present: this.cardIsPresent(),
+      },
       purpose: this.purpose,
     };
   }
@@ -67,7 +88,7 @@ class System extends EventEmitter {
 
   onReaderEnd(readerName) {
     delete this.readers[readerName];
-    this.card = null;
+    this.cards = {};
     this.amiibo = null;
     this.clearTimeouts();
     this.emit('reader', {connected: false});
@@ -78,18 +99,28 @@ class System extends EventEmitter {
   }
 
   async onCardPresented(readerName, card) {
-    this.card = card;
+    this.cards[readerName] = card;
     const purpose = await this.getPurpose();
     if (purpose === 'read') {
       await this.readAmiibo(this.readers[readerName]);
     }
     if (purpose === 'write') {
-      await this.writeAmiibo(this.readers[readerName]);
+      await this.verifyBlankTag(this.readers[readerName]);
+    }
+  }
+
+  async verifyBlankTag(reader) {
+    const amiibo = new Amiibo(reader);
+    try {
+      await amiibo.validateBlankTag();
+      this.emit('card', {present: true, blank: true});
+    } catch (e) {
+      this.emit('card', {present: true, blank: false});
     }
   }
 
   onCardRemoved(readerName) {
-    this.card = null;
+    delete this.cards[readerName];
     this.amiibo = null;
     this.clearTimeouts();
     this.emit('amiibo.removed');
@@ -98,7 +129,7 @@ class System extends EventEmitter {
   async setPurpose(newPurpose) {
     if (_.includes(availablePurposes, newPurpose)) {
       this.purpose = newPurpose;
-      if (newPurpose === 'read' && this.card === null) {
+      if (newPurpose === 'read' && _.size(this.cards) === 0) {
         // there isn't actually a card present, so set amiibo back to null
         this.amiibo = null;
       }
@@ -124,15 +155,15 @@ class System extends EventEmitter {
     }
   }
 
-  async doWriteAmiibo(reader) {
+  async doWriteAmiibo(reader, amiiboData) {
     this.amiibo = new Amiibo(reader);
     this.amiibo.onWriteProgress(message => this.emit('write-progress', message));
-    if (_.size(this.writeConfiguration.data) !== 540) {
-      this.emit('write-progress', 'writer not configured');
+    if (_.size(amiiboData) !== 540) {
+      this.emit('write-progress', `invalid amiibo size ${_.size(amiiboData)}; should be 540`);
       return;
     }
     try {
-      await this.amiibo.write(this.writeConfiguration.data);
+      await this.amiibo.write(amiiboData);
     } catch (err) {
       this.amiibo = null;
       this.emit('write-progress', `error: ${err.message}`);
@@ -140,6 +171,24 @@ class System extends EventEmitter {
     }
   }
 
+  findPopulatedReader() {
+    return _.size(this.cards) === 0
+      ? null
+      : _.get(this.readers, _.first(_.keys(this.cards)));
+  }
+
+  async writeAmiibo(amiiboData) {
+    if (!this.readerIsConnected()) {
+      throw new Error('no reader connected');
+    }
+    if (!this.cardIsPresent()) {
+      throw new Error('no tag present');
+    }
+    const reader = this.findPopulatedReader();
+    await this.doWriteAmiibo(reader, amiiboData)
+  }
+
+  /*
   writeAmiibo(reader) {
     return new Promise((resolve, reject) => {
       this.emit('write-progress', 'waiting');
@@ -154,6 +203,7 @@ class System extends EventEmitter {
       log.error(err);
     });
   }
+  */
 
   async setAmiibo(amiiboFilename) {
     this.writeConfiguration.data = await AmiiboRepository.read(amiiboFilename);

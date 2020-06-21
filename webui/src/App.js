@@ -16,6 +16,8 @@ class App extends Component {
     readerPresent: false,
     appSetting: null,
     writeLog: [],
+    blankCard: false,
+    presentCard: false,
   };
 
   async fetchSystemState() {
@@ -55,6 +57,7 @@ class App extends Component {
         if (!state.present) {
           this.setState({readAmiiboImageUrl: null, readAmiiboCharacterName: null});
         }
+        this.setState({blankCard: state.blank, presentCard: state.present});
       })
       .on('write-progress', message => {
         var writeLog = this.state.writeLog.slice();
@@ -101,6 +104,8 @@ class App extends Component {
                 log={this.state.writeLog}
                 characterName={this.state.writeAmiiboCharacterName}
                 imageUrl={this.state.writeAmiiboImageUrl}
+                presentCard={this.state.presentCard}
+                blankCard={this.state.blankCard}
               />
             )}
           </Grid.Row>
