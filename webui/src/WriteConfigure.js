@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Form, Grid, Dropdown, Message } from 'semantic-ui-react';
-import UploadAmiiboForm from './UploadAmiiboForm';
 
 class WriteConfigure extends Component {
   state = {
@@ -32,10 +31,6 @@ class WriteConfigure extends Component {
     setTimeout(() => this.setState({success: false, error: false}), 5000);
   }
 
-  async onSuccessfulUpload() {
-    await this.populateDropdown();
-  }
-
   async componentDidMount() {
     await this.populateDropdown();
   }
@@ -60,11 +55,6 @@ class WriteConfigure extends Component {
               <Message error content='Error selecting Amiibo' />
             </Form.Field>
           </Form>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <UploadAmiiboForm onSuccessfulUpload={() => this.onSuccessfulUpload()} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
