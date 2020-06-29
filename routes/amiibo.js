@@ -17,7 +17,7 @@ exports = module.exports = (req, res, next) => {
     .then(([amiiboId, imageUrl]) => core.AmiiboDatabase.lookupById(amiiboId)
       .then(character => res.json({
         imageUrl,
-        name: character.name,
+        name: _.get(character, 'name', filename),
       })))
     .catch(next);
 };
