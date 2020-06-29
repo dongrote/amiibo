@@ -43,7 +43,7 @@ class System extends EventEmitter {
       amiiboImageUrl = await this.amiibo.imageUrl();
       const amiiboId = await this.amiibo.id();
       const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
-      amiiboCharacterName = amiiboCharacter.name;
+      amiiboCharacterName = _.get(amiiboCharacter, 'name', null);
     }
     if (reader) {
       const amiibo = new Amiibo(reader);
@@ -148,7 +148,7 @@ class System extends EventEmitter {
     try {
       const amiiboId = await this.amiibo.id();
       const amiiboCharacter = await AmiiboDatabase.lookupById(amiiboId);
-      this.emit('amiibo', amiiboId, amiiboCharacter.name, this.amiibo);  
+      this.emit('amiibo', amiiboId, _.get(amiiboCharacter, 'name', null), this.amiibo);  
     } catch (err) {
       this.amiibo = null;
       this.emit('error', err);
@@ -187,23 +187,6 @@ class System extends EventEmitter {
     const reader = this.findPopulatedReader();
     await this.doWriteAmiibo(reader, amiiboData)
   }
-
-  /*
-  writeAmiibo(reader) {
-    return new Promise((resolve, reject) => {
-      this.emit('write-progress', 'waiting');
-      this.timeouts.write = setTimeout(() => {
-        this.doWriteAmiibo(reader)
-          .then(() => resolve())
-          .catch(reject);
-      }, env.amiiboWriteGraceTimeout());
-    })
-    .catch(err => {
-      this.emit('error', err);
-      log.error(err);
-    });
-  }
-  */
 
   async setAmiibo(amiiboFilename) {
     this.writeConfiguration.data = await AmiiboRepository.read(amiiboFilename);
