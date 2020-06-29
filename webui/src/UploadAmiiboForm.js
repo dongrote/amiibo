@@ -17,6 +17,7 @@ class UploadAmiiboForm extends Component {
   file = null;
 
   async onChooseFile(file) {
+    this.resetUploadButton();
     this.file = file;
     const data = new FormData();
     data.append('file', file);
@@ -24,9 +25,9 @@ class UploadAmiiboForm extends Component {
     if (res.ok) {
       var json = await res.json();
       this.reports = json;
+      this.enableUploadButton();
       this.setState({showReport: true});
     }
-    this.enableUploadButton();
   }
 
   resetUploadButton() {
@@ -93,10 +94,6 @@ class UploadAmiiboForm extends Component {
     } else {
       this.errorUploadButton();
     }
-    setTimeout(() => {
-      this.resetUploadButton();
-      if (res.ok) this.props.onSuccessfulUpload();
-    }, 3000);
   }
 
   render() {
