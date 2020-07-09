@@ -1,14 +1,14 @@
-# nfc
+# amiibo
 
-nfc is an interface for reading and writing Amiibo bin files to NFC tags, written in node.js for ultimate speed and power.
+`amiibo` is an interface for reading and writing Amiibo bin files to NFC tags, written in node.js for ultimate speed and power.
 
-## Install Nodejs 12 LTS
+## Install NodeJS 12 LTS
 
     sudo npm install n -g
     sudo n lts
     node --version
     
-## Install pccscd
+## Install pcscd
 
     sudo apt-get install pcscd
     
