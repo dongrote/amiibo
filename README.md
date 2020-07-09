@@ -1,6 +1,6 @@
 # amiibo
 
-`amiibo` is an interface for reading and writing Amiibo bin files to NFC tags, written in node.js for ultimate speed and power.
+`amiibo` is an interface for reading and writing Amiibo bin files to NFC tags (NTAG215), written in node.js for ultimate speed and power.
 
 ## Install NodeJS 12 LTS
 
@@ -19,8 +19,8 @@
     
 ## Build nfc and react webui
 
-    git clone https://github.com/dongrote/nfc
-    cd nfc
+    git clone https://github.com/dongrote/amiibo
+    cd amiibo
     npm build-and-install
     export AMIIBO_DIRECTORY=/path/to/amiibos # where your amiibo bin files are, no other files should be in this directory
     export DEBUG=*:error,*:info              # to get stack traces if things go wrong
