@@ -22,9 +22,12 @@
     git clone https://github.com/dongrote/amiibo
     cd amiibo
     npm build-and-install
-    export AMIIBO_DIRECTORY=/path/to/amiibos # where your amiibo bin files are, no other files should be in this directory
-    export DEBUG=*:error,*:info              # to get stack traces if things go wrong
-    export AMIITOOL_KEY_SET_FILE_PATH=/path/to/unfixed-fixed-keys.bin #path to crypto key, exercise left up to the reader on where to get it
+    # where your amiibo bin files are, no other files should be in this directory
+    echo "AMIIBO_DIRECTORY=/path/to/amiibos" > .env
+    # to get stack traces if things go wrong
+    echo "DEBUG=*:error,*:info" >> .env
+    # path to crypto key, exercise left up to the reader on where to get it
+    echo "AMIITOOL_KEY_SET_FILE_PATH=/path/to/unfixed-fixed-keys.bin" >> .env 
     npm start
   
 You should now be able to navigate to port 3000 to see a web interface for programming NFC tags with Amiibos!
