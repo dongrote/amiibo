@@ -17,6 +17,10 @@
     git clone --recursive https://github.com/socram8888/amiitool
     cd amiitool && make && sudo cp amiitool /usr/local/bin/amiitool
     
+## Install pcsc-lite development package
+
+    sudo apt-get install libpcsclite-dev
+    
 ## Build amiibo and react webui
 
     git clone https://github.com/dongrote/amiibo
