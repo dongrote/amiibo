@@ -17,7 +17,7 @@
     git clone --recursive https://github.com/socram8888/amiitool
     cd amiitool && make && sudo cp amiitool /usr/local/bin/amiitool
     
-## Build nfc and react webui
+## Build amiibo and react webui
 
     git clone https://github.com/dongrote/amiibo
     cd amiibo
